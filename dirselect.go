@@ -1,1 +1,154 @@
 package dirselect
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/charmbracelet/bubbles/key"
+	tea "github.com/charmbracelet/bubbletea"
+)
+
+func New() (Model, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return Model{}, fmt.Errorf("cannot create dirselect widget: %w", err)
+	}
+
+	digits := key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+	return Model{
+		id:         nextID(),
+		currentDir: homeDir,
+		cursor:     ">",
+		keyMap: keyMap{
+			up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
+			down:         key.NewBinding(key.WithKeys("j", "down", "ctrl+n"), key.WithHelp("j/↓/ctrl+n", "next line")),
+			back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
+			explore:      key.NewBinding(key.WithKeys("l", "right", "enter"), key.WithHelp("l/→/enter", "explore this directory")),
+			jump:         key.NewBinding(digits, key.WithHelp("0-9", "jump to selection")),
+			toggleSelect: key.NewBinding(key.WithKeys("space"), key.WithHelp("spacebar", "toggle selection")),
+			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
+		},
+	}, nil
+}
+
+func (m Model) readDir(path string) tea.Cmd {
+	// All directory listings start with an entry corresponding to
+	// the parent directory; see [Model.dirListing].
+	dirs := []string{".."}
+
+	return func() tea.Msg {
+		dirEntries, err := os.ReadDir(path)
+		if err != nil {
+			return err
+		}
+
+		for _, d := range dirEntries {
+			if d.IsDir() {
+				dirs = append(dirs, d.Name())
+			}
+		}
+
+		return readDirMsg{id: m.id, entries: dirs}
+	}
+}
+
+func (m Model) Init() tea.Cmd {
+	return m.readDir(m.currentDir)
+}
+
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case readDirMsg:
+		if msg.id != m.id {
+			break
+		}
+
+		m.dirListing = msg.entries
+
+	case tea.KeyMsg:
+		switch {
+		// The operations [keyMap.back] and [keyMap.explore]
+		// involve three steps each:
+		//
+		// 1. Adjust [Model.depth], checking for an illegal
+		// depth value where applicable.
+		//
+		// 2. Set [Model.currentDir] to either the parent or
+		// child directory.
+		//
+		// 3. Return the model, along with a readDir command
+		// for the updated [Model.currentDir].
+		case key.Matches(msg, m.keyMap.back):
+			m.depth--
+			if m.depth < 0 {
+				m.depth = 0
+				return m, m.readDir(m.currentDir)
+			}
+
+			m.currentDir = filepath.Dir(m.dirListing[m.lineNumber])
+			return m, m.readDir(m.currentDir)
+
+		case key.Matches(msg, m.keyMap.down):
+			m.lineNumber++
+			if m.lineNumber > len(m.dirListing)-1 {
+				m.lineNumber = len(m.dirListing) - 1
+			}
+
+		case key.Matches(msg, m.keyMap.explore):
+			// Don't do anything if we're on the ".."
+			// entry of the top-level directory.
+			if m.lineNumber == 0 && m.depth == 0 {
+				break
+			}
+
+			if m.lineNumber == 0 {
+				// We're going up, so decrease the
+				// depth.
+				m.depth--
+			} else {
+				// In the normal case, we're going
+				// down, so increase the depth.
+				m.depth++
+			}
+
+			// Note that, even in the case of "..",
+			// [filepath.Join] will Clean the directory,
+			// so we're good.
+			m.currentDir = filepath.Join(m.currentDir, m.dirListing[m.lineNumber])
+			return m, m.readDir(m.currentDir)
+
+		case key.Matches(msg, m.keyMap.jump):
+			// FIXME: not implemented.
+			log.Println(msg)
+
+		case key.Matches(msg, m.keyMap.up):
+			m.lineNumber--
+			if m.lineNumber < 0 {
+				m.lineNumber = 0
+			}
+
+		case key.Matches(msg, m.keyMap.quit):
+			return m, tea.Quit
+		}
+
+	}
+
+	return m, nil
+}
+
+func (m Model) View() string {
+	var s strings.Builder
+
+	for i, d := range m.dirListing {
+		if i == m.lineNumber {
+			fmt.Fprintf(&s, "> [ ] %s\n", d)
+		} else {
+			fmt.Fprintf(&s, "  [ ] %s\n", d)
+		}
+	}
+
+	return s.String()
+}
