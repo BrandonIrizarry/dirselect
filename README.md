@@ -35,9 +35,10 @@ Better:
      [ ] /AwesomeProject
 ```
 
-This also enables the selection of multiple directories, which can be
-useful in the case where an LLM might need access to multiple working
-directories (for example, to compare two projects for similarities and
-differences.)
+This also enables the selection of multiple directories, which are
+accessible as a slice of strings contained in the model returned by
+`Run()`. This feature can be useful in the case where an LLM might
+need access to multiple working directories (for example, to compare
+two projects for similarities and differences.)
 
 
