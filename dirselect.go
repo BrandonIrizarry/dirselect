@@ -28,7 +28,7 @@ func New() (Model, error) {
 			back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
 			explore:      key.NewBinding(key.WithKeys("l", "right", "enter"), key.WithHelp("l/→/enter", "explore this directory")),
 			jump:         key.NewBinding(digits, key.WithHelp("0-9", "jump to selection")),
-			toggleSelect: key.NewBinding(key.WithKeys("space"), key.WithHelp("spacebar", "toggle selection")),
+			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
 	}, nil
