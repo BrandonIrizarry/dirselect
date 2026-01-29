@@ -17,22 +17,19 @@ introducing a checkbox-selection mechanism:
 OK:
 
 ```
-/home
-   /me
-      /CoolProject
-      |
-      |--> I want this directory
+/home/me/
+      CoolProject/
+      ↪ I want this directory
       
-      /AwesomeProject
+      AwesomeProject/
 ```
 
 Better:
 
 ```
-/home
-  /me
-     [x] /CoolProject --> I want this directory
-     [ ] /AwesomeProject
+/home/me/
+     [x] CoolProject/ → I want this directory
+     [ ] AwesomeProject/
 ```
 
 This also enables the selection of multiple directories, which are
