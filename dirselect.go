@@ -71,15 +71,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		// The operations [keyMap.back] and [keyMap.explore]
-		// involve three steps each:
+		// involve a number of steps each:
 		//
-		// 1. Adjust [Model.depth], checking for an illegal
+		// - Adjust [Model.depth], checking for an illegal
 		// depth value where applicable.
 		//
-		// 2. Set [Model.currentDir] to either the parent or
+		// - Set [Model.currentDir] to either the parent or
 		// child directory.
 		//
-		// 3. Return the model, along with a readDir command
+		// - Reset [Model.lineNumber] to 0.
+		//
+		// - Return the model, along with a readDir command
 		// for the updated [Model.currentDir].
 		case key.Matches(msg, m.keyMap.back):
 			m.depth--
@@ -89,6 +91,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			m.currentDir = filepath.Dir(m.dirListing[m.lineNumber])
+			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.down):
@@ -118,6 +121,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// [filepath.Join] will Clean the directory,
 			// so we're good.
 			m.currentDir = filepath.Join(m.currentDir, m.dirListing[m.lineNumber])
+			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.jump):
