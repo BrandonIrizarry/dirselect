@@ -134,6 +134,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// FIXME: not implemented.
 			log.Println(msg)
 
+		case key.Matches(msg, m.keyMap.toggleSelect):
+
 		case key.Matches(msg, m.keyMap.up):
 			m.lineNumber--
 			if m.lineNumber < 0 {
