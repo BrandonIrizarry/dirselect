@@ -38,4 +38,9 @@ accessible as a slice of strings contained in the model returned by
 need access to multiple working directories (for example, to compare
 two projects for similarities and differences.)
 
+# Some Terminology
 
+Throughout the codebase, I use `point` — terminology borrowed from
+Emacs — to refer to where the UI cursor is currently resting, to avoid
+the word "selection", since that refers to actively commiting the
+entry at point to the model state.
