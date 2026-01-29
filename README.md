@@ -9,10 +9,10 @@ found in the Bubble Tea README.
 # Motivation
 
 I needed something customizable and lightweight for my Gogent [REPL
-frontend](- [] jj). It's indeed possible to use the official filepicker for
+frontend](https://github.com/BrandonIrizarry/gogent_repl). It's indeed possible to use the official filepicker for
 selecting directories, but visually unintuitive since you must have
 already entered a directory to select it. So I had the idea of
-enabling a checkbox-selection mechanism instead:
+introducing a checkbox-selection mechanism:
 
 OK:
 
