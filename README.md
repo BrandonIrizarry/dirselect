@@ -14,7 +14,7 @@ selecting directories, but visually unintuitive since you must have
 already entered a directory to select it. So I had the idea of
 introducing a checkbox-selection mechanism:
 
-OK:
+**OK**:
 
 ```
 /home/me/
@@ -24,7 +24,7 @@ OK:
       AwesomeProject/
 ```
 
-Better:
+**Better**:
 
 ```
 /home/me/
