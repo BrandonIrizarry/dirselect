@@ -63,6 +63,9 @@ func (m Model) readDir(path string) tea.Cmd {
 
 // dirAtPoint is sugar for returning the directory that the cursor is
 // currently resting on.
+//
+// Note that we never edit the entries themselves, so it's OK for us
+// to only have a getter method for this field.
 func (m Model) dirAtPoint() string {
 	return m.dirListing[m.lineNumber]
 }
