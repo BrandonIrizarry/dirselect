@@ -100,19 +100,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
-		// The operations [keyMap.back] and [keyMap.explore]
-		// involve a number of steps each:
-		//
-		// - Adjust [Model.depth], checking for an illegal
-		// depth value where applicable.
-		//
-		// - Set [Model.currentDir] to either the parent or
-		// child directory.
-		//
-		// - Reset [Model.lineNumber] to 0.
-		//
-		// - Return the model, along with a readDir command
-		// for the updated [Model.currentDir].
 		case key.Matches(msg, m.keyMap.back):
 			return m.back()
 
