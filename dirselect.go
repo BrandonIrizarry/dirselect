@@ -34,6 +34,12 @@ func New() (Model, error) {
 	}, nil
 }
 
+// readDir returns a [tea.Cmd] that tells the UI to update with the
+// list of directories corresponding to a users selection ('explore',
+// 'back', etc.)
+//
+// Its sole purpose is to supply the path argument to the underlying
+// closure, which is the actual command.
 func (m Model) readDir(path string) tea.Cmd {
 	// All directory listings start with an entry corresponding to
 	// the parent directory; see [Model.dirListing].
