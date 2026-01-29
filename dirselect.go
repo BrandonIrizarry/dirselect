@@ -72,6 +72,17 @@ func (m Model) dirAtPoint() string {
 	return m.dirListing[m.lineNumber]
 }
 
+// back adjusts all the state necessary to effect a "cd .." operation.
+func (m *Model) back() {
+	if m.lineNumber == 0 && m.depth == 0 {
+		return
+	}
+
+	m.depth--
+	m.currentDir = filepath.Join(m.currentDir, "..")
+	m.lineNumber = 0
+}
+
 func (m Model) Init() tea.Cmd {
 	return m.readDir(m.currentDir)
 }
@@ -101,14 +112,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// - Return the model, along with a readDir command
 		// for the updated [Model.currentDir].
 		case key.Matches(msg, m.keyMap.back):
-			m.depth--
-			if m.depth < 0 {
-				m.depth = 0
-				return m, m.readDir(m.currentDir)
-			}
+			m.back()
 
-			m.currentDir = filepath.Dir(m.dirAtPoint())
-			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.down):
