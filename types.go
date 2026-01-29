@@ -28,6 +28,10 @@ type Model struct {
 	// slices in the case of otherwise empty directories.
 	dirListing []string
 
+	// The homeDir field is the user's home directory, stored for
+	// allowing jumps back to it.
+	homeDir string
+
 	// The currentDir field is the path of the currently explored
 	// directory. This should always be an absolute path. In
 	// practice, this should always be the case since the
@@ -59,6 +63,7 @@ type keyMap struct {
 	explore      key.Binding
 	toggleSelect key.Binding
 	jump         key.Binding
+	jumpToHome   key.Binding
 	quit         key.Binding
 }
 

@@ -20,6 +20,7 @@ func New() (Model, error) {
 	digits := key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 	return Model{
 		id:         nextID(),
+		homeDir:    homeDir,
 		currentDir: homeDir,
 		keyMap: keyMap{
 			up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
@@ -27,6 +28,7 @@ func New() (Model, error) {
 			back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
 			explore:      key.NewBinding(key.WithKeys("l", "right", "enter"), key.WithHelp("l/→/enter", "explore this directory")),
 			jump:         key.NewBinding(digits, key.WithHelp("0-9", "jump to selection")),
+			jumpToHome:   key.NewBinding(key.WithKeys("~"), key.WithHelp("~", "jump back to home directory")),
 			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
@@ -142,6 +144,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keyMap.jump):
 			// FIXME: not implemented.
 			log.Println(msg)
+
+		case key.Matches(msg, m.keyMap.jumpToHome):
+			m.currentDir = m.homeDir
+			m.lineNumber = 0
+			m.depth = 0
+
+			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
 			absDir, err := filepath.Abs(m.dirAtPoint())
