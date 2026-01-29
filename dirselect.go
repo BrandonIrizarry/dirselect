@@ -31,6 +31,7 @@ func New() (Model, error) {
 			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
+		selectedDirs: make(map[string]struct{}),
 	}, nil
 }
 
@@ -141,6 +142,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			log.Println(msg)
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
+			absDir, err := filepath.Abs(m.dirAtPoint())
+			if err != nil {
+				return m, tea.Quit
+			}
+
+			// Toggle the presence of the directory in the
+			// map.
+			if _, present := m.selectedDirs[absDir]; present {
+				delete(m.selectedDirs, absDir)
+			} else {
+				m.selectedDirs[absDir] = struct{}{}
+			}
 
 		case key.Matches(msg, m.keyMap.up):
 			m.lineNumber--
@@ -161,10 +174,20 @@ func (m Model) View() string {
 	var s strings.Builder
 
 	for i, d := range m.dirListing {
+		checkMark := " "
+		absDir, err := filepath.Abs(d)
+		if err != nil {
+			panic("FIXME: set up assigning errors to m.err")
+		}
+
+		if _, present := m.selectedDirs[absDir]; present {
+			checkMark = "✓"
+		}
+
 		if i == m.lineNumber {
-			fmt.Fprintf(&s, "> [ ] %s\n", d)
+			fmt.Fprintf(&s, "> [%s] %s\n", checkMark, d)
 		} else {
-			fmt.Fprintf(&s, "  [ ] %s\n", d)
+			fmt.Fprintf(&s, "  [%s] %s\n", checkMark, d)
 		}
 	}
 

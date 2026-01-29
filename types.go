@@ -12,11 +12,14 @@ type Model struct {
 	// current selection.
 	lineNumber int
 
-	// The selectedDirs field is the list of directories currently
+	// The selectedDirs field is the set of directories currently
 	// selected by the user for use as the model's result
 	// value. Directory selection is managed through
 	// [keyMap.toggleSelect].
-	selectedDirs []string
+	//
+	// The directories themselves are stored here as absolute
+	// paths, so that they may be uniquely identified later on.
+	selectedDirs map[string]struct{}
 
 	// The dirListing field is the list of directories inside the
 	// currently explored directory. It always has at least one
