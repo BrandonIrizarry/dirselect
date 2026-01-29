@@ -31,7 +31,7 @@ func New() (Model, error) {
 			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
-		selectedDirs: make(map[string]struct{}),
+		SelectedDirs: make(map[string]struct{}),
 	}, nil
 }
 
@@ -149,10 +149,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			// Toggle the presence of the directory in the
 			// map.
-			if _, present := m.selectedDirs[absDir]; present {
-				delete(m.selectedDirs, absDir)
+			if _, present := m.SelectedDirs[absDir]; present {
+				delete(m.SelectedDirs, absDir)
 			} else {
-				m.selectedDirs[absDir] = struct{}{}
+				m.SelectedDirs[absDir] = struct{}{}
 			}
 
 		case key.Matches(msg, m.keyMap.up):
@@ -180,7 +180,7 @@ func (m Model) View() string {
 			panic("FIXME: set up assigning errors to m.err")
 		}
 
-		if _, present := m.selectedDirs[absDir]; present {
+		if _, present := m.SelectedDirs[absDir]; present {
 			checkMark = "✓"
 		}
 
