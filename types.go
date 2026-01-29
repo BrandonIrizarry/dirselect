@@ -13,7 +13,9 @@ type Model struct {
 	lineNumber int
 
 	// The selectedDirs field is the list of directories currently
-	// selected by the user for use as the model's result value.
+	// selected by the user for use as the model's result
+	// value. Directory selection is managed through
+	// [keyMap.toggleSelect].
 	selectedDirs []string
 
 	// The dirListing field is the list of directories inside the
@@ -23,8 +25,11 @@ type Model struct {
 	// slices in the case of otherwise empty directories.
 	dirListing []string
 
-	// The currentDir field is the absolute path of the currently
-	// explored directory.
+	// The currentDir field is the path of the currently explored
+	// directory. This should always be an absolute path. In
+	// practice, this should always be the case since the
+	// top-level always initializes it with the result of
+	// [os.UserHomeDir].
 	currentDir string
 
 	// The cursor field is the shape of the cursor denoting the
@@ -37,8 +42,13 @@ type Model struct {
 	keyMap keyMap
 
 	// The depth field tracks how deep we've gone beneath the
-	// starting directory. It's illegal to move above a depth of
-	// 0.
+	// directory with which the widget was first initialized
+	// (i.e. the first value of [Model.currentDir]). It's illegal
+	// to move above a depth of 0.
+	//
+	// This field effectively performs the same function as the
+	// stack used in the original filepicker Bubble Tea component,
+	// arguably in a simpler manner.
 	depth int
 }
 
