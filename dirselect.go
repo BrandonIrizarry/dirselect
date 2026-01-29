@@ -125,19 +125,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keyMap.explore):
 			// Don't do anything if we're on the ".."
 			// entry of the top-level directory.
-			if m.lineNumber == 0 && m.depth == 0 {
-				break
+			if m.lineNumber == 0 {
+				m.back()
+				return m, m.readDir(m.currentDir)
 			}
 
-			if m.lineNumber == 0 {
-				// We're going up, so decrease the
-				// depth.
-				m.depth--
-			} else {
-				// In the normal case, we're going
-				// down, so increase the depth.
-				m.depth++
-			}
+			m.depth++
 
 			// Note that, even in the case of "..",
 			// [filepath.Join] will Clean the directory,
