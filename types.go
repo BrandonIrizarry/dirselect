@@ -21,11 +21,9 @@ type Model struct {
 	// current selection.
 	lineNumber int
 
-	// The prevLineNumber field saves the line number of the
-	// parent directory when invoking [keyMap.explore], such that
-	// the [Model.lineNumber] is restored to this value when
-	// invoking [keyMap.back].
-	prevLineNumber int
+	// The lineNumberStack field saves our place for when we want
+	// to move back up directories again ("breadcrumbs").
+	lineNumberStack []int
 
 	// The dirListing field is the list of directories inside the
 	// currently explored directory. It always has at least one

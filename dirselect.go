@@ -32,7 +32,8 @@ func New() (Model, error) {
 			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
-		SelectedDirs: make(map[string]struct{}),
+		SelectedDirs:    make(map[string]struct{}),
+		lineNumberStack: make([]int, 0),
 	}, nil
 }
 
@@ -80,7 +81,8 @@ func (m Model) back() (tea.Model, tea.Cmd) {
 
 	m.depth--
 	m.currentDir = filepath.Dir(m.currentDir)
-	m.lineNumber = 0
+	m.lineNumber = m.lineNumberStack[len(m.lineNumberStack)-1]
+	m.lineNumberStack = m.lineNumberStack[:len(m.lineNumberStack)-1]
 
 	return m, m.readDir(m.currentDir)
 }
@@ -122,6 +124,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// [filepath.Join] will Clean the directory,
 			// so we're good.
 			m.currentDir = filepath.Join(m.currentDir, m.dirAtPoint())
+			m.lineNumberStack = append(m.lineNumberStack, m.lineNumber)
 			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
