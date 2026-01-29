@@ -74,7 +74,7 @@ func (m Model) dirAtPoint() string {
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m *Model) back() {
-	if m.lineNumber == 0 && m.depth == 0 {
+	if m.depth == 0 {
 		return
 	}
 
