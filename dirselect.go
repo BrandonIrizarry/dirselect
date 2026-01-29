@@ -105,7 +105,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, m.readDir(m.currentDir)
 			}
 
-			m.currentDir = filepath.Dir(m.dirListing[m.lineNumber])
+			m.currentDir = filepath.Dir(m.dirAtPoint())
 			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
@@ -135,7 +135,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Note that, even in the case of "..",
 			// [filepath.Join] will Clean the directory,
 			// so we're good.
-			m.currentDir = filepath.Join(m.currentDir, m.dirListing[m.lineNumber])
+			m.currentDir = filepath.Join(m.currentDir, m.dirAtPoint())
 			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
