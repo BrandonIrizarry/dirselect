@@ -39,7 +39,7 @@ func New() (Model, error) {
 // 'back', etc.)
 //
 // Its sole purpose is to supply the path argument to the underlying
-// closure, which is the actual command.
+// closure, which is then returned as the actual command.
 func (m Model) readDir(path string) tea.Cmd {
 	// All directory listings start with an entry corresponding to
 	// the parent directory; see [Model.dirListing].
