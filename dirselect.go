@@ -79,7 +79,7 @@ func (m *Model) back() {
 	}
 
 	m.depth--
-	m.currentDir = filepath.Join(m.currentDir, "..")
+	m.currentDir = filepath.Dir(m.currentDir)
 	m.lineNumber = 0
 }
 
