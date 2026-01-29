@@ -21,7 +21,6 @@ func New() (Model, error) {
 	return Model{
 		id:         nextID(),
 		currentDir: homeDir,
-		cursor:     ">",
 		keyMap: keyMap{
 			up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
 			down:         key.NewBinding(key.WithKeys("j", "down", "ctrl+n"), key.WithHelp("j/↓/ctrl+n", "next line")),

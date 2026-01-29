@@ -35,10 +35,6 @@ type Model struct {
 	// [os.UserHomeDir].
 	currentDir string
 
-	// The cursor field is the shape of the cursor denoting the
-	// current line number (e.g., '>')
-	cursor string
-
 	// The keyMap field is the set of keybindings in for
 	// navigating the model UI (e.g., '↑' goes to the previous
 	// line, etc.)
