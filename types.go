@@ -25,7 +25,7 @@ type Model struct {
 
 	// The lineNumberStack field saves our place for when we want
 	// to move back up directories again ("breadcrumbs").
-	lineNumberStack []int
+	lineNumberStack lineNumberStack
 
 	// The dirListing field is the list of directories inside the
 	// currently explored directory. It always has at least one

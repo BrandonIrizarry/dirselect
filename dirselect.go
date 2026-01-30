@@ -1,6 +1,7 @@
 package dirselect
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +12,31 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 )
+
+type lineNumberStack struct {
+	values []int
+}
+
+func (s lineNumberStack) length() int {
+	return len(s.values)
+}
+
+func (s *lineNumberStack) push(val int) {
+	s.values = append(s.values, val)
+}
+
+var ErrEmptyStack = errors.New("empty lineNumberStack")
+
+func (s *lineNumberStack) pop() (int, error) {
+	if len(s.values) == 0 {
+		return 0, ErrEmptyStack
+	}
+
+	top := s.values[len(s.values)-1]
+	s.values = s.values[:len(s.values)-1]
+
+	return top, nil
+}
 
 func New() (Model, error) {
 	// Set up logging first. We'll close the file just before
@@ -45,7 +71,7 @@ func New() (Model, error) {
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
 		SelectedDirs:    make([]string, 0),
-		lineNumberStack: make([]int, 0),
+		lineNumberStack: lineNumberStack{values: make([]int, 0)},
 		logFile:         logFile,
 	}, nil
 }
@@ -89,14 +115,18 @@ func (m Model) dirAtPoint() string {
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
+	var err error
 	if m.depth == 0 {
 		return m, m.readDir(m.currentDir)
 	}
 
 	m.depth--
 	m.currentDir = filepath.Dir(m.currentDir)
-	m.lineNumber = m.lineNumberStack[len(m.lineNumberStack)-1]
-	m.lineNumberStack = m.lineNumberStack[:len(m.lineNumberStack)-1]
+
+	m.lineNumber, err = m.lineNumberStack.pop()
+	if err != nil {
+		panic("FIXME: save errors to m.err")
+	}
 
 	return m, m.readDir(m.currentDir)
 }
@@ -138,7 +168,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// [filepath.Join] will Clean the directory,
 			// so we're good.
 			m.currentDir = m.dirAtPoint()
-			m.lineNumberStack = append(m.lineNumberStack, m.lineNumber)
+			m.lineNumberStack.push(m.lineNumber)
 			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
