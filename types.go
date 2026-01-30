@@ -1,6 +1,8 @@
 package dirselect
 
 import (
+	"os"
+
 	"github.com/charmbracelet/bubbles/key"
 )
 
@@ -57,6 +59,10 @@ type Model struct {
 	// stack used in the original filepicker Bubble Tea component,
 	// arguably in a simpler manner.
 	depth int
+
+	// The file used for logging. We need to keep this around so
+	// that we can close it when we finally quit the widget.
+	logFile *os.File
 }
 
 // KeyMap defines key bindings for each user action.

@@ -13,6 +13,17 @@ import (
 )
 
 func New() (Model, error) {
+	// Set up logging first. We'll close the file just before
+	// returning the [tea.Quit] command. We can do this because we
+	// store it in the model's state.
+	logFile, err := os.OpenFile("debug.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return Model{}, fmt.Errorf("couldn't create debug.log: %w", err)
+	}
+	log.SetOutput(logFile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	// Now onto the business of the model itself.
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return Model{}, fmt.Errorf("cannot create dirselect widget: %w", err)
@@ -35,6 +46,7 @@ func New() (Model, error) {
 		},
 		SelectedDirs:    make([]string, 0),
 		lineNumberStack: make([]int, 0),
+		logFile:         logFile,
 	}, nil
 }
 
@@ -141,17 +153,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
-			absDir, err := filepath.Abs(m.dirAtPoint())
-			if err != nil {
-				return m, tea.Quit
-			}
+			dir := filepath.Join(m.currentDir, m.dirAtPoint())
 
+			log.Printf("Candidate for toggling: %s", dir)
 			// Toggle the presence of the directory in the
 			// map.
-			if pos := slices.Index(m.SelectedDirs, absDir); pos != -1 {
+			if pos := slices.Index(m.SelectedDirs, dir); pos != -1 {
+				log.Printf("Removed selected dir at pos %d", pos)
 				m.SelectedDirs = slices.Delete(m.SelectedDirs, pos, pos+1)
 			} else {
-				m.SelectedDirs = append(m.SelectedDirs, absDir)
+				log.Printf("Added %s to selected dirs", dir)
+				m.SelectedDirs = append(m.SelectedDirs, dir)
 			}
 
 		case key.Matches(msg, m.keyMap.up):
@@ -161,6 +173,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.quit):
+			m.logFile.Close()
 			return m, tea.Quit
 		}
 
@@ -172,14 +185,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	var s strings.Builder
 
+	log.Printf("Current dir: %s", m.currentDir)
+	log.Printf("Selected dirs: %v", m.SelectedDirs)
 	for i, d := range m.dirListing {
 		checkMark := " "
-		absDir, err := filepath.Abs(d)
-		if err != nil {
-			panic("FIXME: set up assigning errors to m.err")
-		}
 
-		if slices.Contains(m.SelectedDirs, absDir) {
+		if slices.Contains(m.SelectedDirs, filepath.Join(m.currentDir, d)) {
 			checkMark = "✓"
 		}
 
