@@ -183,6 +183,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.explore):
+			if m.lineNumber == 0 && m.lineNumberStack.depth() == 0 {
+				break
+			}
+
 			return m.explore()
 
 		case key.Matches(msg, m.keyMap.jump):
@@ -227,13 +231,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.logFile.Close()
 			return m, tea.Quit
 		}
-
-	default:
-		return m, m.readDir(m.currentDir)
 	}
 
-	log.Print("Past switch statement")
-	return m, m.readDir(m.currentDir)
+	log.Printf("Uncaught message: %v", msg)
+	return m, nil
 }
 
 func (m Model) View() string {
