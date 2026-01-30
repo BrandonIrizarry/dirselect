@@ -221,8 +221,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
+	default:
+		return m, m.readDir(m.currentDir)
 	}
 
+	log.Print("Past switch statement")
 	return m, m.readDir(m.currentDir)
 }
 
