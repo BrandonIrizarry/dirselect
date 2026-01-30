@@ -223,7 +223,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	}
 
-	return m, nil
+	return m, m.readDir(m.currentDir)
 }
 
 func (m Model) View() string {
