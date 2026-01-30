@@ -197,6 +197,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
+			// Disable selection of the ".." entry. In
+			// addition, no "[ ]" should appear next to
+			// it.
 			if m.lineNumber == 0 {
 				break
 			}
