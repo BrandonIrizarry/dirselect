@@ -17,10 +17,6 @@ type lineNumberStack struct {
 	values []int
 }
 
-func (s lineNumberStack) length() int {
-	return len(s.values)
-}
-
 func (s *lineNumberStack) push(val int) {
 	s.values = append(s.values, val)
 }
