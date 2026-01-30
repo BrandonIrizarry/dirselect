@@ -197,6 +197,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
+			if m.lineNumber == 0 {
+				break
+			}
+
 			dir := m.dirAtPoint()
 
 			log.Printf("Candidate for toggling: %s", dir)
