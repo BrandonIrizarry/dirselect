@@ -243,9 +243,6 @@ func (m Model) View() string {
 		markEmpty   = " "
 	)
 
-	log.Printf("Current dir: %s", m.currentDir)
-	log.Printf("Selected dirs: %v", m.SelectedDirs)
-
 	for i, d := range m.dirListing {
 		mark := markEmpty
 
