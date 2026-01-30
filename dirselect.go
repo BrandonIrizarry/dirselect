@@ -78,12 +78,13 @@ func (m Model) readDir(path string) tea.Cmd {
 }
 
 // dirAtPoint is sugar for returning the directory that the cursor is
-// currently resting on.
+// currently resting on. The directory is returned as an absolute
+// path, per how [Model.currentDir] is always set.
 //
 // Note that we never edit the entries themselves, so it's OK for us
 // to only have a getter method for this field.
 func (m Model) dirAtPoint() string {
-	return m.dirListing[m.lineNumber]
+	return filepath.Join(m.currentDir, m.dirListing[m.lineNumber])
 }
 
 // back adjusts all the state necessary to effect a "cd .." operation.
@@ -136,7 +137,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Note that, even in the case of "..",
 			// [filepath.Join] will Clean the directory,
 			// so we're good.
-			m.currentDir = filepath.Join(m.currentDir, m.dirAtPoint())
+			m.currentDir = m.dirAtPoint()
 			m.lineNumberStack = append(m.lineNumberStack, m.lineNumber)
 			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
@@ -153,7 +154,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
-			dir := filepath.Join(m.currentDir, m.dirAtPoint())
+			dir := m.dirAtPoint()
 
 			log.Printf("Candidate for toggling: %s", dir)
 			// Toggle the presence of the directory in the
