@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -32,7 +33,7 @@ func New() (Model, error) {
 			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
-		SelectedDirs:    make(map[string]struct{}),
+		SelectedDirs:    make([]string, 0),
 		lineNumberStack: make([]int, 0),
 	}, nil
 }
@@ -147,10 +148,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			// Toggle the presence of the directory in the
 			// map.
-			if _, present := m.SelectedDirs[absDir]; present {
-				delete(m.SelectedDirs, absDir)
+			if pos := slices.Index(m.SelectedDirs, absDir); pos != -1 {
+				m.SelectedDirs = slices.Delete(m.SelectedDirs, pos, pos+1)
 			} else {
-				m.SelectedDirs[absDir] = struct{}{}
+				m.SelectedDirs = append(m.SelectedDirs, absDir)
 			}
 
 		case key.Matches(msg, m.keyMap.up):
@@ -178,7 +179,7 @@ func (m Model) View() string {
 			panic("FIXME: set up assigning errors to m.err")
 		}
 
-		if _, present := m.SelectedDirs[absDir]; present {
+		if slices.Contains(m.SelectedDirs, absDir) {
 			checkMark = "✓"
 		}
 

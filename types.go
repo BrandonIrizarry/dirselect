@@ -12,7 +12,7 @@ type Model struct {
 	//
 	// The directories themselves are stored here as absolute
 	// paths, so that they may be uniquely identified later on.
-	SelectedDirs map[string]struct{}
+	SelectedDirs []string
 
 	// The id field is the reference-count id of this model.
 	id int
