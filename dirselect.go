@@ -238,20 +238,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	var s strings.Builder
+	const (
+		markChecked = "✓"
+		markEmpty   = " "
+	)
 
 	log.Printf("Current dir: %s", m.currentDir)
 	log.Printf("Selected dirs: %v", m.SelectedDirs)
+
 	for i, d := range m.dirListing {
-		checkMark := " "
+		mark := markEmpty
 
 		if slices.Contains(m.SelectedDirs, filepath.Join(m.currentDir, d)) {
-			checkMark = "✓"
+			mark = markChecked
 		}
 
 		if i == m.lineNumber {
-			fmt.Fprintf(&s, "> [%s] %s\n", checkMark, d)
+			fmt.Fprintf(&s, "> [%s] %s\n", mark, d)
 		} else {
-			fmt.Fprintf(&s, "  [%s] %s\n", checkMark, d)
+			fmt.Fprintf(&s, "  [%s] %s\n", mark, d)
 		}
 	}
 
