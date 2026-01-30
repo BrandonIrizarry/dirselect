@@ -17,6 +17,10 @@ type lineNumberStack struct {
 	values []int
 }
 
+func (s lineNumberStack) depth() int {
+	return len(s.values)
+}
+
 func (s *lineNumberStack) push(val int) {
 	s.values = append(s.values, val)
 }
@@ -32,6 +36,10 @@ func (s *lineNumberStack) pop() (int, error) {
 	s.values = s.values[:len(s.values)-1]
 
 	return top, nil
+}
+
+func (s *lineNumberStack) reset() {
+	s.values = make([]int, 0)
 }
 
 func (m *Model) saveLineNumber() {
@@ -125,11 +133,10 @@ func (m Model) dirAtPoint() string {
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
-	if m.depth == 0 {
+	if m.lineNumberStack.depth() == 0 {
 		return m, m.readDir(m.currentDir)
 	}
 
-	m.depth--
 	m.currentDir = filepath.Dir(m.currentDir)
 	m.restoreLineNumber()
 
@@ -142,8 +149,6 @@ func (m Model) explore() (tea.Model, tea.Cmd) {
 	if m.lineNumber == 0 {
 		return m.back()
 	}
-
-	m.depth++
 
 	// Note that, even in the case of "..",
 	// [filepath.Join] will Clean the directory,
@@ -187,7 +192,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keyMap.jumpToHome):
 			m.currentDir = m.homeDir
 			m.lineNumber = 0
-			m.depth = 0
+			m.lineNumberStack.reset()
 
 			return m, m.readDir(m.currentDir)
 
