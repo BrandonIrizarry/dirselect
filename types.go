@@ -50,16 +50,6 @@ type Model struct {
 	// line, etc.)
 	keyMap keyMap
 
-	// The depth field tracks how deep we've gone beneath the
-	// directory with which the widget was first initialized
-	// (i.e. the first value of [Model.currentDir]). It's illegal
-	// to move above a depth of 0.
-	//
-	// This field effectively performs the same function as the
-	// stack used in the original filepicker Bubble Tea component,
-	// arguably in a simpler manner.
-	depth int
-
 	// The file used for logging. We need to keep this around so
 	// that we can close it when we finally quit the widget.
 	logFile *os.File
