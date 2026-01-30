@@ -136,6 +136,23 @@ func (m Model) back() (tea.Model, tea.Cmd) {
 	return m, m.readDir(m.currentDir)
 }
 
+func (m Model) explore() (tea.Model, tea.Cmd) {
+	// Don't do anything if we're on the ".."
+	// entry of the top-level directory.
+	if m.lineNumber == 0 {
+		return m.back()
+	}
+
+	m.depth++
+
+	// Note that, even in the case of "..",
+	// [filepath.Join] will Clean the directory,
+	// so we're good.
+	m.currentDir = m.dirAtPoint()
+	m.saveLineNumber()
+	return m, m.readDir(m.currentDir)
+}
+
 func (m Model) Init() tea.Cmd {
 	return m.readDir(m.currentDir)
 }
@@ -161,20 +178,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.explore):
-			// Don't do anything if we're on the ".."
-			// entry of the top-level directory.
-			if m.lineNumber == 0 {
-				return m.back()
-			}
-
-			m.depth++
-
-			// Note that, even in the case of "..",
-			// [filepath.Join] will Clean the directory,
-			// so we're good.
-			m.currentDir = m.dirAtPoint()
-			m.saveLineNumber()
-			return m, m.readDir(m.currentDir)
+			return m.explore()
 
 		case key.Matches(msg, m.keyMap.jump):
 			// FIXME: not implemented.
