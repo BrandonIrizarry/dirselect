@@ -34,6 +34,20 @@ func (s *lineNumberStack) pop() (int, error) {
 	return top, nil
 }
 
+func (m *Model) saveLineNumber() {
+	m.lineNumberStack.push(m.lineNumber)
+	m.lineNumber = 0
+}
+
+func (m *Model) restoreLineNumber() {
+	val, err := m.lineNumberStack.pop()
+	if err != nil {
+		panic("FIXME: save errors to m.err")
+	}
+
+	m.lineNumber = val
+}
+
 func New() (Model, error) {
 	// Set up logging first. We'll close the file just before
 	// returning the [tea.Quit] command. We can do this because we
@@ -111,18 +125,13 @@ func (m Model) dirAtPoint() string {
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
-	var err error
 	if m.depth == 0 {
 		return m, m.readDir(m.currentDir)
 	}
 
 	m.depth--
 	m.currentDir = filepath.Dir(m.currentDir)
-
-	m.lineNumber, err = m.lineNumberStack.pop()
-	if err != nil {
-		panic("FIXME: save errors to m.err")
-	}
+	m.restoreLineNumber()
 
 	return m, m.readDir(m.currentDir)
 }
@@ -164,8 +173,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// [filepath.Join] will Clean the directory,
 			// so we're good.
 			m.currentDir = m.dirAtPoint()
-			m.lineNumberStack.push(m.lineNumber)
-			m.lineNumber = 0
+			m.saveLineNumber()
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.jump):
