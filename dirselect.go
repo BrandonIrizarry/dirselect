@@ -133,10 +133,6 @@ func (m Model) dirAtPoint() string {
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
-	if m.lineNumberStack.depth() == 0 {
-		return m, m.readDir(m.currentDir)
-	}
-
 	m.currentDir = filepath.Dir(m.currentDir)
 	m.restoreLineNumber()
 
@@ -144,15 +140,6 @@ func (m Model) back() (tea.Model, tea.Cmd) {
 }
 
 func (m Model) explore() (tea.Model, tea.Cmd) {
-	// Don't do anything if we're on the ".."
-	// entry of the top-level directory.
-	if m.lineNumber == 0 {
-		return m.back()
-	}
-
-	// Note that, even in the case of "..",
-	// [filepath.Join] will Clean the directory,
-	// so we're good.
 	m.currentDir = m.dirAtPoint()
 	m.saveLineNumber()
 	return m, m.readDir(m.currentDir)
@@ -174,6 +161,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keyMap.back):
+			if m.lineNumberStack.depth() == 0 {
+				break
+			}
+
 			return m.back()
 
 		case key.Matches(msg, m.keyMap.down):
@@ -185,6 +176,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keyMap.explore):
 			if m.lineNumber == 0 && m.lineNumberStack.depth() == 0 {
 				break
+			}
+
+			if m.lineNumber == 0 {
+				return m.back()
 			}
 
 			return m.explore()
@@ -243,6 +238,9 @@ func (m Model) View() string {
 		markChecked = "✓"
 		markEmpty   = " "
 	)
+
+	s.WriteString("\n")
+	fmt.Fprintf(&s, "depth: %d\n\n", m.lineNumberStack.depth())
 
 	for i, d := range m.dirListing {
 		mark := markEmpty
