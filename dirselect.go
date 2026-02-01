@@ -158,6 +158,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.dirListing = msg.entries
 
+		// FIXME: use const for magic number 10 here.
+		m.viewHeight = min(10, len(m.dirListing))
+		m.viewMin = 0
+		m.viewMax = m.viewHeight - 1
+
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keyMap.back):
@@ -171,6 +176,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.lineNumber++
 			if m.lineNumber > len(m.dirListing)-1 {
 				m.lineNumber = len(m.dirListing) - 1
+			}
+
+			if m.lineNumber > m.viewMax {
+				m.viewMin++
+				m.viewMax++
 			}
 
 		case key.Matches(msg, m.keyMap.explore):
@@ -222,6 +232,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.lineNumber = 0
 			}
 
+			if m.lineNumber < m.viewMin {
+				m.viewMin--
+				m.viewMax--
+			}
+
 		case key.Matches(msg, m.keyMap.quit):
 			m.logFile.Close()
 			return m, tea.Quit
@@ -243,6 +258,10 @@ func (m Model) View() string {
 	fmt.Fprintf(&s, "depth: %d\n\n", m.lineNumberStack.depth())
 
 	for i, d := range m.dirListing {
+		if i < m.viewMin || i > m.viewMax {
+			continue
+		}
+
 		mark := markEmpty
 
 		if slices.Contains(m.SelectedDirs, filepath.Join(m.currentDir, d)) {

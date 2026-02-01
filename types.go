@@ -56,6 +56,9 @@ type Model struct {
 	// The file used for logging. We need to keep this around so
 	// that we can close it when we finally quit the widget.
 	logFile *os.File
+
+	// FIXME: add explanation
+	viewMin, viewMax, viewHeight int
 }
 
 // KeyMap defines key bindings for each user action.
