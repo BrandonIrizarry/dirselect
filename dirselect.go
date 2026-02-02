@@ -13,29 +13,39 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type lineNumberStack struct {
-	values []int
-}
-
-func (s lineNumberStack) depth() int {
-	return len(s.values)
-}
-
-func (s *lineNumberStack) push(val int) {
-	s.values = append(s.values, val)
-}
-
 var ErrEmptyStack = errors.New("empty lineNumberStack")
 
-func (s *lineNumberStack) pop() (int, error) {
-	if len(s.values) == 0 {
-		return 0, ErrEmptyStack
+type stack struct {
+	push  func(int)
+	pop   func() (int, error)
+	depth func() int
+}
+
+func newStack() stack {
+	slice := make([]int, 0)
+	return stack{
+		push: func(i int) {
+			slice = append(slice, i)
+		},
+		pop: func() (int, error) {
+			if len(slice) == 0 {
+				return 0, ErrEmptyStack
+			}
+
+			res := slice[len(slice)-1]
+			slice = slice[:len(slice)-1]
+			return res, nil
+		},
+		depth: func() int {
+			return len(slice)
+		},
 	}
+}
 
-	top := s.values[len(s.values)-1]
-	s.values = s.values[:len(s.values)-1]
+var stack2 = newStack()
 
-	return top, nil
+type lineNumberStack struct {
+	values []int
 }
 
 func (s *lineNumberStack) reset() {
@@ -43,12 +53,12 @@ func (s *lineNumberStack) reset() {
 }
 
 func (m *Model) saveLineNumber() {
-	m.lineNumberStack.push(m.lineNumber)
+	stack2.push(m.lineNumber)
 	m.lineNumber = 0
 }
 
 func (m *Model) restoreLineNumber() {
-	val, err := m.lineNumberStack.pop()
+	val, err := stack2.pop()
 	if err != nil {
 		panic("FIXME: save errors to m.err")
 	}
