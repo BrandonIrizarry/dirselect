@@ -269,6 +269,14 @@ func (m Model) View() string {
 	s.WriteString("\n")
 	fmt.Fprintf(&s, "depth: %d\n\n", lineNumberStack.depth())
 
+	if m.viewMin > 0 {
+		s.WriteString("↑")
+	}
+
+	// Add a newline before listing entries, so that introducing
+	// "↑" doesn't make the view look janky.
+	s.WriteString("\n")
+
 	for i, d := range m.dirListing {
 		if i < m.viewMin || i > m.viewMax {
 			continue
@@ -285,6 +293,10 @@ func (m Model) View() string {
 		} else {
 			fmt.Fprintf(&s, "  [%s] %s\n", mark, d)
 		}
+	}
+
+	if m.viewMax < len(m.dirListing)-1 {
+		s.WriteString("↓")
 	}
 
 	return s.String()
