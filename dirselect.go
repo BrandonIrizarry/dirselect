@@ -175,7 +175,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keyMap.back):
-			if m.lineNumberStack.depth() == 0 {
+			if lineNumberStack.depth() == 0 {
 				break
 			}
 
@@ -193,7 +193,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.explore):
-			if m.lineNumber == 0 && m.lineNumberStack.depth() == 0 {
+			if m.lineNumber == 0 && lineNumberStack.depth() == 0 {
 				break
 			}
 
@@ -264,7 +264,7 @@ func (m Model) View() string {
 	)
 
 	s.WriteString("\n")
-	fmt.Fprintf(&s, "depth: %d\n\n", m.lineNumberStack.depth())
+	fmt.Fprintf(&s, "depth: %d\n\n", lineNumberStack.depth())
 
 	for i, d := range m.dirListing {
 		if i < m.viewMin || i > m.viewMax {
