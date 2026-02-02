@@ -11,6 +11,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 // The file used for logging. This file is meant to be closed just
@@ -259,6 +260,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+var borderStyle = lipgloss.NewStyle().
+	BorderStyle(lipgloss.RoundedBorder()).
+	BorderForeground(lipgloss.Color("63"))
+
 func (m Model) View() string {
 	var s strings.Builder
 	const (
@@ -299,5 +304,5 @@ func (m Model) View() string {
 		s.WriteString("↓")
 	}
 
-	return s.String()
+	return borderStyle.Render(s.String())
 }
