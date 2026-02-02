@@ -23,13 +23,6 @@ type Model struct {
 	// current selection.
 	lineNumber int
 
-	// The lineNumberStack field saves our place for when we want
-	// to move back up directories again ("breadcrumbs"). It also
-	// implicitly keeps track of how deep we've traversed from the
-	// user's home directory, and for example prevents any attempt
-	// to explore above it.
-	lineNumberStack lineNumberStack
-
 	// The dirListing field is the list of directories inside the
 	// currently explored directory. It always has at least one
 	// entry, '..', allowing the user to navigate to the parent

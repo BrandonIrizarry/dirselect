@@ -102,9 +102,8 @@ func New() (Model, error) {
 			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
-		SelectedDirs:    make([]string, 0),
-		lineNumberStack: lineNumberStack{values: make([]int, 0)},
-		logFile:         logFile,
+		SelectedDirs: make([]string, 0),
+		logFile:      logFile,
 	}, nil
 }
 
