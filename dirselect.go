@@ -262,7 +262,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 var borderStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.RoundedBorder()).
-	BorderForeground(lipgloss.Color("63"))
+	BorderForeground(lipgloss.Color("63")).
+	Width(50)
+
+var entryStyle = lipgloss.NewStyle().
+	MarginLeft(10).
+	Background(lipgloss.Color("50"))
+
+var arrowStyle = entryStyle.Width(30).Align(lipgloss.Center)
+
+var (
+	upArrow   = arrowStyle.Render("↑")
+	downArrow = arrowStyle.Render("↓")
+)
 
 func (m Model) View() string {
 	var s strings.Builder
@@ -271,11 +283,12 @@ func (m Model) View() string {
 		markEmpty   = " "
 	)
 
-	s.WriteString("\n")
 	fmt.Fprintf(&s, "depth: %d\n\n", lineNumberStack.depth())
 
 	if m.viewMin > 0 {
-		s.WriteString("↑")
+		s.WriteString(upArrow)
+	} else {
+		s.WriteString(arrowStyle.Render(""))
 	}
 
 	// Add a newline before listing entries, so that introducing
@@ -293,15 +306,20 @@ func (m Model) View() string {
 			mark = markChecked
 		}
 
+		var entry string
 		if i == m.lineNumber {
-			fmt.Fprintf(&s, "> [%s] %s\n", mark, d)
+			entry = fmt.Sprintf("> [%s] %s", mark, d)
 		} else {
-			fmt.Fprintf(&s, "  [%s] %s\n", mark, d)
+			entry = fmt.Sprintf("  [%s] %s", mark, d)
 		}
+
+		s.WriteString(entryStyle.Render(entry) + "\n")
 	}
 
 	if m.viewMax < len(m.dirListing)-1 {
-		s.WriteString("↓")
+		s.WriteString(downArrow)
+	} else {
+		s.WriteString(arrowStyle.Render(""))
 	}
 
 	return borderStyle.Render(s.String())
