@@ -19,6 +19,7 @@ type stack struct {
 	push  func(int)
 	pop   func() (int, error)
 	depth func() int
+	reset func()
 }
 
 func newStack() stack {
@@ -39,6 +40,9 @@ func newStack() stack {
 		depth: func() int {
 			return len(slice)
 		},
+		reset: func() {
+			slice = make([]int, 0)
+		},
 	}
 }
 
@@ -46,10 +50,6 @@ var stack2 = newStack()
 
 type lineNumberStack struct {
 	values []int
-}
-
-func (s *lineNumberStack) reset() {
-	s.values = make([]int, 0)
 }
 
 func (m *Model) saveLineNumber() {
@@ -211,7 +211,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keyMap.jumpToHome):
 			m.currentDir = m.homeDir
 			m.lineNumber = 0
-			m.lineNumberStack.reset()
+			stack2.reset()
 
 			return m, m.readDir(m.currentDir)
 
