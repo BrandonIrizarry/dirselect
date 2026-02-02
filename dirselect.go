@@ -13,6 +13,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+// The file used for logging. This file is meant to be closed just
+// before we send a [tea.Quit] message in [Model.Update].
+var logFile *os.File
+
 var ErrEmptyStack = errors.New("empty lineNumberStack")
 
 // The stack saves our place for when we want to move back up
@@ -99,7 +103,6 @@ func New() (Model, error) {
 			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 		},
 		SelectedDirs: make([]string, 0),
-		logFile:      logFile,
 	}, nil
 }
 
@@ -247,7 +250,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.quit):
-			m.logFile.Close()
+			logFile.Close()
 			return m, tea.Quit
 		}
 	}

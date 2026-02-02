@@ -1,8 +1,6 @@
 package dirselect
 
 import (
-	"os"
-
 	"github.com/charmbracelet/bubbles/key"
 )
 
@@ -45,10 +43,6 @@ type Model struct {
 	// navigating the model UI (e.g., '↑' goes to the previous
 	// line, etc.)
 	keyMap keyMap
-
-	// The file used for logging. We need to keep this around so
-	// that we can close it when we finally quit the widget.
-	logFile *os.File
 
 	// FIXME: add explanation
 	viewMin, viewMax, viewHeight int
