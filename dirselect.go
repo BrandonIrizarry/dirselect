@@ -52,10 +52,6 @@ func newStack() stack {
 
 var stack2 = newStack()
 
-type lineNumberStack struct {
-	values []int
-}
-
 func (m *Model) saveLineNumber() {
 	stack2.push(m.lineNumber)
 	m.lineNumber = 0
