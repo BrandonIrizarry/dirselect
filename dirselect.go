@@ -50,15 +50,15 @@ func newStack() stack {
 	}
 }
 
-var stack2 = newStack()
+var lineNumberStack = newStack()
 
 func (m *Model) saveLineNumber() {
-	stack2.push(m.lineNumber)
+	lineNumberStack.push(m.lineNumber)
 	m.lineNumber = 0
 }
 
 func (m *Model) restoreLineNumber() {
-	val, err := stack2.pop()
+	val, err := lineNumberStack.pop()
 	if err != nil {
 		panic("FIXME: save errors to m.err")
 	}
@@ -210,7 +210,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keyMap.jumpToHome):
 			m.currentDir = m.homeDir
 			m.lineNumber = 0
-			stack2.reset()
+			lineNumberStack.reset()
 
 			return m, m.readDir(m.currentDir)
 
