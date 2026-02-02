@@ -15,6 +15,10 @@ import (
 
 var ErrEmptyStack = errors.New("empty lineNumberStack")
 
+// The stack saves our place for when we want to move back up
+// directories again ("breadcrumbs"). It also implicitly keeps track
+// of how deep we've traversed from the user's home directory, and for
+// example prevents any attempt to explore above it.
 type stack struct {
 	push  func(int)
 	pop   func() (int, error)
