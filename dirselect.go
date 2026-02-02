@@ -266,8 +266,7 @@ var borderStyle = lipgloss.NewStyle().
 	Width(50)
 
 var entryStyle = lipgloss.NewStyle().
-	MarginLeft(10).
-	Background(lipgloss.Color("50"))
+	MarginLeft(10)
 
 var arrowStyle = entryStyle.Width(30).Align(lipgloss.Center)
 
