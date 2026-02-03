@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -28,6 +29,14 @@ var (
 	// from lingering on after we exit the application hosting the
 	// model.
 	quitting bool
+
+	// The depth of the home directory in the filesystem. I would
+	// assume this should be 2 in all cases (e.g. "/home/user"),
+	// but I could be wrong.
+	//
+	// This helps for restoring a usable [lineNumberStack] when
+	// jumping to a directory other than the home directory.
+	homeDirDepth int
 )
 
 var ErrEmptyStack = errors.New("empty lineNumberStack")
@@ -96,6 +105,11 @@ func New() (Model, error) {
 
 	// Now onto the business of the model itself.
 	homeDir, err := os.UserHomeDir()
+
+	// See [homeDirDepth]. For example, "/home/alice" here would
+	// report a homeDirDepth of 2.
+	homeDirDepth = len(strings.Split(homeDir, "/"))
+
 	if err != nil {
 		return Model{}, fmt.Errorf("cannot create dirselect widget: %w", err)
 	}
@@ -220,8 +234,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.explore()
 
 		case key.Matches(msg, m.keyMap.jump):
-			// FIXME: not implemented.
-			log.Println(msg)
+			index, err := strconv.Atoi(msg.String())
+			if err != nil {
+				panic("FIXME: save error to m.err")
+			}
+
+			dest := m.SelectedDirs[index]
+			m.currentDir = filepath.Dir(dest)
+
+			// Upward navigation to parent directories
+			// depends entirely on the stack, so we need a
+			// dummy stack to reenable it.
+			lineNumberStack = newStack()
+			totalDepth := len(strings.Split(dest, "/"))
+
+			for range totalDepth - homeDirDepth - 1 {
+				lineNumberStack.push(0)
+			}
+
+			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.jumpToHome):
 			m.currentDir = m.homeDir
