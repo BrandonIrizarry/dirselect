@@ -78,22 +78,6 @@ func newStack() stack {
 
 var lineNumberStack = newStack()
 
-// FIXME: inline this into [Model.explore].
-func (m *Model) saveLineNumber() {
-	lineNumberStack.push(m.lineNumber)
-	m.lineNumber = 0
-}
-
-// FIXME: inline this into [Model.back].
-func (m *Model) restoreLineNumber() {
-	val, err := lineNumberStack.pop()
-	if err != nil {
-		panic("FIXME: save errors to m.err")
-	}
-
-	m.lineNumber = val
-}
-
 func New() (Model, error) {
 	// Set up logging first. We'll close the file just before
 	// returning the [tea.Quit] command. We can do this because we
@@ -175,14 +159,21 @@ func (m Model) dirAtPoint() string {
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
 	m.currentDir = filepath.Dir(m.currentDir)
-	m.restoreLineNumber()
+	val, err := lineNumberStack.pop()
+	if err != nil {
+		panic("FIXME: save errors to m.err")
+	}
+
+	m.lineNumber = val
 
 	return m, m.readDir(m.currentDir)
 }
 
 func (m Model) explore() (tea.Model, tea.Cmd) {
 	m.currentDir = m.dirAtPoint()
-	m.saveLineNumber()
+	lineNumberStack.push(m.lineNumber)
+	m.lineNumber = 0
+
 	return m, m.readDir(m.currentDir)
 }
 
