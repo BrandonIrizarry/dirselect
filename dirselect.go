@@ -29,13 +29,6 @@ var (
 	// model.
 	quitting bool
 
-	// The depth of the home directory in the filesystem. I would
-	// assume this should be 2 in all cases (e.g. "/home/user"),
-	// but I could be wrong.
-	//
-	// This helps for restoring a usable [lineNumberStack] when
-	// jumping to a directory other than the home directory.
-	homeDirDepth int
 )
 
 func New() (Model, error) {
@@ -51,10 +44,6 @@ func New() (Model, error) {
 
 	// Now onto the business of the model itself.
 	homeDir, err := os.UserHomeDir()
-
-	// See [homeDirDepth]. For example, "/home/alice" here would
-	// report a homeDirDepth of 2.
-	homeDirDepth = len(strings.Split(homeDir, "/"))
 
 	if err != nil {
 		return Model{}, fmt.Errorf("cannot create dirselect widget: %w", err)
