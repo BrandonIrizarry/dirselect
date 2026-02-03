@@ -307,7 +307,7 @@ func (m Model) View() string {
 
 		var entry string
 		if i == m.lineNumber {
-			entry = fmt.Sprintf("> [%s] %s", mark, d)
+			entry = fmt.Sprintf("→ [%s] %s", mark, d)
 		} else {
 			entry = fmt.Sprintf("  [%s] %s", mark, d)
 		}
