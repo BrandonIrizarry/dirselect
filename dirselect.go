@@ -78,11 +78,13 @@ func newStack() stack {
 
 var lineNumberStack = newStack()
 
+// FIXME: inline this into explore().
 func (m *Model) saveLineNumber() {
 	lineNumberStack.push(m.lineNumber)
 	m.lineNumber = 0
 }
 
+// FIXME: inline this into back().
 func (m *Model) restoreLineNumber() {
 	val, err := lineNumberStack.pop()
 	if err != nil {
@@ -239,19 +241,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				panic("FIXME: save error to m.err")
 			}
 
-			dest := m.SelectedDirs[index]
-			m.currentDir = filepath.Dir(dest)
+			selection := m.SelectedDirs[index]
+
+			// Note that the selection's parent directory
+			// is the actual destination of the jump.
+			m.currentDir = filepath.Dir(selection)
 
 			// Upward navigation to parent directories
 			// depends entirely on the stack, so we need a
 			// dummy stack to reenable it.
 			lineNumberStack = newStack()
-			totalDepth := len(strings.Split(dest, "/"))
+			totalDepth := len(strings.Split(selection, "/"))
 
 			for range totalDepth - homeDirDepth - 1 {
 				lineNumberStack.push(0)
 			}
 
+			// Set the current line number to that of the
+			// selection we've jumped to. This also helps
+			// us avoid out-of-bound index panics.
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.jumpToHome):
