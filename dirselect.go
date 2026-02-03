@@ -289,6 +289,7 @@ var (
 )
 
 func (m Model) View() string {
+	// Don't render anything in thise case; see [quitting].
 	if quitting {
 		return ""
 	}
