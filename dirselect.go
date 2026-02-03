@@ -257,9 +257,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				lineNumberStack.push(0)
 			}
 
-			// Set the current line number to that of the
-			// selection we've jumped to. This also helps
-			// us avoid out-of-bound index panics.
+			// Start at ".." when jumping to the new
+			// directory.
+			m.lineNumber = 0
 			return m, m.readDir(m.currentDir)
 
 		case key.Matches(msg, m.keyMap.jumpToHome):
