@@ -14,9 +14,21 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// The file used for logging. This file is meant to be closed just
-// before we send a [tea.Quit] message in [Model.Update].
-var logFile *os.File
+// Various state variables used to manage the model. These could in
+// fact be fields within [Model] itself, but having them as
+// package-local state variables suffices.
+var (
+	// The file used for logging. This file is meant to be closed just
+	// before we send a [tea.Quit] message in [Model.Update].
+	logFile *os.File
+
+	// The quitting flag signals whether we're about to send
+	// [tea.Quit], so that we can return an empty string inside
+	// [Model.View]. This prevents a stale, garbled UI display
+	// from lingering on after we exit the application hosting the
+	// model.
+	quitting bool
+)
 
 var ErrEmptyStack = errors.New("empty lineNumberStack")
 
@@ -252,6 +264,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, m.keyMap.quit):
 			logFile.Close()
+			quitting = true
 			return m, tea.Quit
 		}
 	}
@@ -276,6 +289,10 @@ var (
 )
 
 func (m Model) View() string {
+	if quitting {
+		return ""
+	}
+
 	var s strings.Builder
 	const (
 		markChecked = "✓"
