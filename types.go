@@ -61,6 +61,8 @@ type keyMap struct {
 }
 
 type readDirMsg struct {
-	id      int
-	entries []string
+	id       int
+	entries  []string
+	path     string
+	startDir string
 }

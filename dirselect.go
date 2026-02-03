@@ -1,7 +1,6 @@
 package dirselect
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -38,45 +37,6 @@ var (
 	// jumping to a directory other than the home directory.
 	homeDirDepth int
 )
-
-var ErrEmptyStack = errors.New("empty lineNumberStack")
-
-// The stack saves our place for when we want to move back up
-// directories again ("breadcrumbs"). It also implicitly keeps track
-// of how deep we've traversed from the user's home directory, and for
-// example prevents any attempt to explore above it.
-type stack struct {
-	push  func(int)
-	pop   func() (int, error)
-	depth func() int
-	reset func()
-}
-
-func newStack() stack {
-	slice := make([]int, 0)
-	return stack{
-		push: func(i int) {
-			slice = append(slice, i)
-		},
-		pop: func() (int, error) {
-			if len(slice) == 0 {
-				return 0, ErrEmptyStack
-			}
-
-			res := slice[len(slice)-1]
-			slice = slice[:len(slice)-1]
-			return res, nil
-		},
-		depth: func() int {
-			return len(slice)
-		},
-		reset: func() {
-			slice = make([]int, 0)
-		},
-	}
-}
-
-var lineNumberStack = newStack()
 
 func New() (Model, error) {
 	// Set up logging first. We'll close the file just before
@@ -125,7 +85,7 @@ func New() (Model, error) {
 //
 // Its sole purpose is to supply the path argument to the underlying
 // closure, which is then returned as the actual command.
-func (m Model) readDir(path string) tea.Cmd {
+func (m Model) readDir(path, startEntry string) tea.Cmd {
 	// All directory listings start with an entry corresponding to
 	// the parent directory; see [Model.dirListing].
 	dirs := []string{".."}
@@ -142,7 +102,7 @@ func (m Model) readDir(path string) tea.Cmd {
 			}
 		}
 
-		return readDirMsg{id: m.id, entries: dirs}
+		return readDirMsg{id: m.id, path: path, entries: dirs, startDir: startEntry}
 	}
 }
 
@@ -158,27 +118,22 @@ func (m Model) dirAtPoint() string {
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
-	m.currentDir = filepath.Dir(m.currentDir)
-	val, err := lineNumberStack.pop()
-	if err != nil {
-		panic("FIXME: save errors to m.err")
-	}
+	path := filepath.Dir(m.currentDir)
+	startDir := filepath.Base(m.currentDir)
 
-	m.lineNumber = val
-
-	return m, m.readDir(m.currentDir)
+	return m, m.readDir(path, startDir)
 }
 
 func (m Model) explore() (tea.Model, tea.Cmd) {
-	m.currentDir = m.dirAtPoint()
-	lineNumberStack.push(m.lineNumber)
-	m.lineNumber = 0
+	path := m.dirAtPoint()
+	startDir := ".."
 
-	return m, m.readDir(m.currentDir)
+	return m, m.readDir(path, startDir)
 }
 
 func (m Model) Init() tea.Cmd {
-	return m.readDir(m.currentDir)
+	log.Printf("Starting by reading %s", m.currentDir)
+	return m.readDir(m.currentDir, "..")
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -188,7 +143,21 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			break
 		}
 
+		found := false
+		for i, e := range msg.entries {
+			if e == msg.startDir {
+				m.lineNumber = i
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			log.Printf("Couldn't find pointed-to entry: %s", msg.path)
+		}
+
 		m.dirListing = msg.entries
+		m.currentDir = msg.path
 
 		// FIXME: use const for magic number 10 here.
 		m.viewHeight = min(10, len(m.dirListing))
@@ -198,7 +167,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keyMap.back):
-			if lineNumberStack.depth() == 0 {
+			if m.currentDir == m.homeDir {
 				break
 			}
 
@@ -216,7 +185,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.explore):
-			if m.lineNumber == 0 && lineNumberStack.depth() == 0 {
+			if m.lineNumber == 0 && m.currentDir == m.homeDir {
 				break
 			}
 
@@ -243,29 +212,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			// Note that the selection's parent directory
 			// is the actual destination of the jump.
-			m.currentDir = filepath.Dir(selection)
+			path := filepath.Dir(selection)
+			startDir := filepath.Base(selection)
 
-			// Upward navigation to parent directories
-			// depends entirely on the stack, so we need a
-			// dummy stack to reenable it.
-			lineNumberStack = newStack()
-			totalDepth := len(strings.Split(selection, "/"))
-
-			for range totalDepth - homeDirDepth - 1 {
-				lineNumberStack.push(0)
-			}
-
-			// Start at ".." when jumping to the new
-			// directory.
-			m.lineNumber = 0
-			return m, m.readDir(m.currentDir)
+			return m, m.readDir(path, startDir)
 
 		case key.Matches(msg, m.keyMap.jumpToHome):
-			m.currentDir = m.homeDir
-			m.lineNumber = 0
-			lineNumberStack.reset()
-
-			return m, m.readDir(m.currentDir)
+			return m, m.readDir(m.homeDir, "..")
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
 			// Disable selection of the ".." entry. In
@@ -336,10 +289,6 @@ func (m Model) View() string {
 		markChecked = "✓"
 		markEmpty   = " "
 	)
-
-	// FIXME: this is for debugging only. It should be removed
-	// when making a release.
-	fmt.Fprintf(&view, "depth: %d\n\n", lineNumberStack.depth())
 
 	// Display the "jump list."
 	for i, s := range m.SelectedDirs {
