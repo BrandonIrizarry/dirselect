@@ -78,13 +78,13 @@ func newStack() stack {
 
 var lineNumberStack = newStack()
 
-// FIXME: inline this into explore().
+// FIXME: inline this into [Model.explore].
 func (m *Model) saveLineNumber() {
 	lineNumberStack.push(m.lineNumber)
 	m.lineNumber = 0
 }
 
-// FIXME: inline this into back().
+// FIXME: inline this into [Model.back].
 func (m *Model) restoreLineNumber() {
 	val, err := lineNumberStack.pop()
 	if err != nil {
