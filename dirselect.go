@@ -304,6 +304,11 @@ func (m Model) View() string {
 	// when making a release.
 	fmt.Fprintf(&view, "depth: %d\n\n", lineNumberStack.depth())
 
+	// Display the "jump list."
+	for i, s := range m.SelectedDirs {
+		fmt.Fprintf(&view, "%d: %s\n", i, s)
+	}
+
 	if m.viewMin > 0 {
 		view.WriteString(upArrow)
 	} else {
