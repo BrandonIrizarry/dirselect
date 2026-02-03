@@ -29,6 +29,9 @@ var (
 	// model.
 	quitting bool
 
+	// homeDir is the user's home directory, stored for
+	// allowing jumps back to it.
+	homeDir string
 )
 
 func New() (Model, error) {
@@ -52,7 +55,6 @@ func New() (Model, error) {
 	digits := key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 	return Model{
 		id:         nextID(),
-		homeDir:    homeDir,
 		currentDir: homeDir,
 		keyMap: keyMap{
 			up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
@@ -156,7 +158,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keyMap.back):
-			if m.currentDir == m.homeDir {
+			if m.currentDir == homeDir {
 				break
 			}
 
@@ -174,7 +176,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.explore):
-			if m.lineNumber == 0 && m.currentDir == m.homeDir {
+			if m.lineNumber == 0 && m.currentDir == homeDir {
 				break
 			}
 
@@ -207,7 +209,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.readDir(path, startDir)
 
 		case key.Matches(msg, m.keyMap.jumpToHome):
-			return m, m.readDir(m.homeDir, "..")
+			return m, m.readDir(homeDir, "..")
 
 		case key.Matches(msg, m.keyMap.toggleSelect):
 			// Disable selection of the ".." entry. In
