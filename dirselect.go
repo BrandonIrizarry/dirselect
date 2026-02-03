@@ -294,7 +294,7 @@ func (m Model) View() string {
 		return ""
 	}
 
-	var s strings.Builder
+	var view strings.Builder
 	const (
 		markChecked = "✓"
 		markEmpty   = " "
@@ -302,17 +302,17 @@ func (m Model) View() string {
 
 	// FIXME: this is for debugging only. It should be removed
 	// when making a release.
-	fmt.Fprintf(&s, "depth: %d\n\n", lineNumberStack.depth())
+	fmt.Fprintf(&view, "depth: %d\n\n", lineNumberStack.depth())
 
 	if m.viewMin > 0 {
-		s.WriteString(upArrow)
+		view.WriteString(upArrow)
 	} else {
-		s.WriteString(arrowStyle.Render(""))
+		view.WriteString(arrowStyle.Render(""))
 	}
 
 	// Add a newline before listing entries, so that introducing
 	// "↑" doesn't make the view look janky.
-	s.WriteString("\n")
+	view.WriteString("\n")
 
 	for i, d := range m.dirListing {
 		if i < m.viewMin || i > m.viewMax {
@@ -332,14 +332,14 @@ func (m Model) View() string {
 			entry = fmt.Sprintf("  [%s] %s", mark, d)
 		}
 
-		s.WriteString(entryStyle.Render(entry) + "\n")
+		view.WriteString(entryStyle.Render(entry) + "\n")
 	}
 
 	if m.viewMax < len(m.dirListing)-1 {
-		s.WriteString(downArrow)
+		view.WriteString(downArrow)
 	} else {
-		s.WriteString(arrowStyle.Render(""))
+		view.WriteString(arrowStyle.Render(""))
 	}
 
-	return borderStyle.Render(s.String())
+	return borderStyle.Render(view.String())
 }
