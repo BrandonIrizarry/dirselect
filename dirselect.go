@@ -300,6 +300,8 @@ func (m Model) View() string {
 		markEmpty   = " "
 	)
 
+	// FIXME: this is for debugging only. It should be removed
+	// when making a release.
 	fmt.Fprintf(&s, "depth: %d\n\n", lineNumberStack.depth())
 
 	if m.viewMin > 0 {
