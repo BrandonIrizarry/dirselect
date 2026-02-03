@@ -192,8 +192,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// FIXME: use const for magic number 10 here.
 		m.viewHeight = min(10, len(m.dirListing))
-		m.viewMin = 0
-		m.viewMax = m.viewHeight - 1
+		m.viewMin = m.lineNumber
+		m.viewMax = m.viewMin + m.viewHeight - 1
 
 	case tea.KeyMsg:
 		switch {
