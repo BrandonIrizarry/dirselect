@@ -241,6 +241,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				panic("FIXME: save error to m.err")
 			}
 
+			// FIXME: 0-9 is the allowed range of jump
+			// indices, and therefore 10 should be the
+			// maximum number of selectable directories.
+			if index >= len(m.SelectedDirs) || index > 9 {
+				return m, nil
+			}
+
 			selection := m.SelectedDirs[index]
 
 			// Note that the selection's parent directory
