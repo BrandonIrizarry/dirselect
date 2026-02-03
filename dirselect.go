@@ -150,7 +150,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.currentDir = msg.path
 
 		// FIXME: use const for magic number 10 here.
+		//
+		// The viewport can't exceed 10 entries.
 		m.viewHeight = min(10, len(m.dirListing))
+
 		m.viewMin = m.lineNumber
 		m.viewMax = m.viewMin + m.viewHeight - 1
 
