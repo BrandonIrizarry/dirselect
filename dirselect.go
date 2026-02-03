@@ -240,7 +240,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.lineNumber = 0
 			}
 
-			if m.lineNumber < m.viewMin {
+			if m.viewMin > 0 && m.lineNumber < m.viewMin+4 {
 				m.viewMin--
 				m.viewMax--
 			}
