@@ -13,10 +13,6 @@ type Model struct {
 	// The id field is the reference-count id of this model.
 	id int
 
-	// The lineNumber field is the zero-indexed line number of the
-	// current selection.
-	lineNumber int
-
 	// The dirListing field is the list of directories inside the
 	// currently explored directory. It always has at least one
 	// entry, '..', allowing the user to navigate to the parent

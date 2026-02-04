@@ -37,6 +37,10 @@ var (
 	// portion of the directory picker [Model].
 	viewMin, viewMax int
 
+	// lineNumber is the zero-indexed line number pointed to by
+	// the cursor.
+	lineNumber int
+
 	// KeyMap defines key bindings for each user action.
 	keyMap = struct {
 		down         key.Binding
@@ -117,7 +121,7 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 // Note that we never edit the entries themselves, so it's OK for us
 // to only have a getter method for this field.
 func (m Model) dirAtPoint() string {
-	return filepath.Join(m.currentDir, m.dirListing[m.lineNumber])
+	return filepath.Join(m.currentDir, m.dirListing[lineNumber])
 }
 
 // back adjusts all the state necessary to effect a "cd .." operation.
@@ -136,29 +140,29 @@ func (m Model) explore() (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) scrollDown(times int) {
-	log.Printf("times: %d; line number before scroll-down code: %d", times, m.lineNumber)
+	log.Printf("times: %d; line number before scroll-down code: %d", times, lineNumber)
 	for range times {
-		m.lineNumber++
-		if m.lineNumber > len(m.dirListing)-1 {
-			m.lineNumber = len(m.dirListing) - 1
+		lineNumber++
+		if lineNumber > len(m.dirListing)-1 {
+			lineNumber = len(m.dirListing) - 1
 		}
 
-		if viewMax < len(m.dirListing)-1 && m.lineNumber > (viewMax+viewMin)/2 {
+		if viewMax < len(m.dirListing)-1 && lineNumber > (viewMax+viewMin)/2 {
 			viewMin++
 			viewMax++
 		}
 	}
-	log.Printf("line number after scroll-down code: %d", m.lineNumber)
+	log.Printf("line number after scroll-down code: %d", lineNumber)
 }
 
 func (m *Model) scrollUp(times int) {
 	for range times {
-		m.lineNumber--
-		if m.lineNumber < 0 {
-			m.lineNumber = 0
+		lineNumber--
+		if lineNumber < 0 {
+			lineNumber = 0
 		}
 
-		if viewMin > 0 && m.lineNumber < (viewMax+viewMin)/2 {
+		if viewMin > 0 && lineNumber < (viewMax+viewMin)/2 {
 			viewMin--
 			viewMax--
 		}
@@ -185,7 +189,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		viewMin = 0
 		viewMax = min(10, len(m.dirListing)) - 1
-		m.lineNumber = 0
+		lineNumber = 0
 
 		found := false
 		for i, e := range msg.entries {
@@ -200,7 +204,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !found {
 			log.Printf("Couldn't find pointed-to entry: %s", msg.startDir)
 		} else {
-			log.Printf("line number: %d", m.lineNumber)
+			log.Printf("line number: %d", lineNumber)
 		}
 
 		m.currentDir = msg.path
@@ -218,11 +222,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.scrollDown(1)
 
 		case key.Matches(msg, keyMap.explore):
-			if m.lineNumber == 0 && m.currentDir == homeDir {
+			if lineNumber == 0 && m.currentDir == homeDir {
 				break
 			}
 
-			if m.lineNumber == 0 {
+			if lineNumber == 0 {
 				return m.back()
 			}
 
@@ -257,7 +261,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Disable selection of the ".." entry. In
 			// addition, no "[ ]" should appear next to
 			// it.
-			if m.lineNumber == 0 {
+			if lineNumber == 0 {
 				break
 			}
 
@@ -342,7 +346,7 @@ func (m Model) View() string {
 		}
 
 		var entry string
-		if i == m.lineNumber {
+		if i == lineNumber {
 			entry = fmt.Sprintf("→ [%s] %s", mark, d)
 		} else {
 			entry = fmt.Sprintf("  [%s] %s", mark, d)
