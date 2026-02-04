@@ -345,12 +345,6 @@ func (m Model) View() string {
 	view.WriteString("\n")
 
 	for i, d := range dirListing {
-		// Enforce that only the current viewport height be
-		// displayed.
-		if i < viewMin || i > viewMax {
-			continue
-		}
-
 		// If d is one of the selected directories, then
 		// display a checkmark; else leave a space.
 		mark := " "
@@ -358,14 +352,30 @@ func (m Model) View() string {
 			mark = "✓"
 		}
 
-		// Inform the display which line is currently being
-		// pointed at by the cursor.
 		var entry string
-		if i == lineNumber {
-			emphasized := lipgloss.NewStyle().Underline(true).Render(d)
-			entry = fmt.Sprintf("→ [%s] %s", mark, emphasized)
-		} else {
-			entry = fmt.Sprintf("  [%s] %s", mark, d)
+		emphasized := lipgloss.NewStyle().Underline(true).Render(d)
+
+		switch {
+		// Enforce that only the current viewport height be
+		// displayed.
+		case i == 0:
+			if lineNumber == 0 {
+				entry = fmt.Sprintf("→     %s", emphasized)
+			} else {
+				entry = fmt.Sprintf("      %s", d)
+			}
+
+		case i < viewMin || i > viewMax:
+			continue
+
+		default:
+			// Inform the display which line is currently being
+			// pointed at by the cursor.
+			if i == lineNumber {
+				entry = fmt.Sprintf("→ [%s] %s", mark, emphasized)
+			} else {
+				entry = fmt.Sprintf("  [%s] %s", mark, d)
+			}
 		}
 
 		// Here we're careful not to render the newline
