@@ -231,6 +231,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
+		// It could be the case that, while the cursor is on a
+		// hidden directory, the user presses the key that
+		// activates the binding in [keyMap] to toggle hidden
+		// directories. In that case, the directory is reread,
+		// but the [readDirMsg.startDir] no longer
+		// exists. That's OK, since the default settings for
+		// viewMin, viewMax, and lineNumber (see above) take
+		// care of this: we simply start on "..".
 		if !found {
 			log.Printf("Couldn't find pointed-to entry: %s", msg.startDir)
 		} else {
