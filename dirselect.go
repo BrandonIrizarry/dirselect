@@ -46,7 +46,7 @@ func New() (Model, error) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// Now onto the business of the model itself.
-	homeDir, err := os.UserHomeDir()
+	homeDir, err = os.UserHomeDir()
 	if err != nil {
 		return Model{}, fmt.Errorf("cannot create dirselect widget: %w", err)
 	}
