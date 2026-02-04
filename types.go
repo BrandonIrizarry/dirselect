@@ -13,13 +13,6 @@ type Model struct {
 	// The id field is the reference-count id of this model.
 	id int
 
-	// The dirListing field is the list of directories inside the
-	// currently explored directory. It always has at least one
-	// entry, '..', allowing the user to navigate to the parent
-	// directory. This is partly to avoid panics involving empty
-	// slices in the case of otherwise empty directories.
-	dirListing []string
-
 	// The currentDir field is the path of the currently explored
 	// directory. This should always be an absolute path. In
 	// practice, this should always be the case since the

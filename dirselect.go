@@ -41,6 +41,13 @@ var (
 	// the cursor.
 	lineNumber int
 
+	// dirListing is the list of directories inside the currently
+	// explored directory. It always has at least one entry, '..',
+	// allowing the user to navigate to the parent directory. This
+	// is partly to avoid panics involving empty slices in the
+	// case of otherwise empty directories.
+	dirListing []string
+
 	// KeyMap defines key bindings for each user action.
 	keyMap = struct {
 		down         key.Binding
@@ -121,7 +128,7 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 // Note that we never edit the entries themselves, so it's OK for us
 // to only have a getter method for this field.
 func (m Model) dirAtPoint() string {
-	return filepath.Join(m.currentDir, m.dirListing[lineNumber])
+	return filepath.Join(m.currentDir, dirListing[lineNumber])
 }
 
 // back adjusts all the state necessary to effect a "cd .." operation.
@@ -143,11 +150,11 @@ func (m *Model) scrollDown(times int) {
 	log.Printf("times: %d; line number before scroll-down code: %d", times, lineNumber)
 	for range times {
 		lineNumber++
-		if lineNumber > len(m.dirListing)-1 {
-			lineNumber = len(m.dirListing) - 1
+		if lineNumber > len(dirListing)-1 {
+			lineNumber = len(dirListing) - 1
 		}
 
-		if viewMax < len(m.dirListing)-1 && lineNumber > (viewMax+viewMin)/2 {
+		if viewMax < len(dirListing)-1 && lineNumber > (viewMax+viewMin)/2 {
 			viewMin++
 			viewMax++
 		}
@@ -185,10 +192,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// make sure dirListing is set before scrollDown is
 		// called, since it references this state being
 		// mutated here!
-		m.dirListing = msg.entries
+		dirListing = msg.entries
 
 		viewMin = 0
-		viewMax = min(10, len(m.dirListing)) - 1
+		viewMax = min(10, len(dirListing)) - 1
 		lineNumber = 0
 
 		found := false
@@ -334,7 +341,7 @@ func (m Model) View() string {
 	// "↑" doesn't make the view look janky.
 	view.WriteString("\n")
 
-	for i, d := range m.dirListing {
+	for i, d := range dirListing {
 		if i < viewMin || i > viewMax {
 			continue
 		}
@@ -355,7 +362,7 @@ func (m Model) View() string {
 		view.WriteString(entryStyle.Render(entry) + "\n")
 	}
 
-	if viewMax < len(m.dirListing)-1 {
+	if viewMax < len(dirListing)-1 {
 		view.WriteString(downArrow)
 	} else {
 		view.WriteString(arrowStyle.Render(""))
