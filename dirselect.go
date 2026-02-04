@@ -285,6 +285,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.SelectedDirs = slices.Delete(m.SelectedDirs, pos, pos+1)
 			} else {
 				log.Printf("Added %s to selected dirs", dir)
+
+				// If there are already 10 selected directories, do nothing.
+				if len(m.SelectedDirs) == 10 {
+					break
+				}
+
 				m.SelectedDirs = append(m.SelectedDirs, dir)
 			}
 
