@@ -420,5 +420,32 @@ func (m Model) View() string {
 		view.WriteString(arrowStyle.Render(""))
 	}
 
+	// Display the keybinding help text.
+	type binding struct {
+		actionName string
+		key        key.Binding
+	}
+	var buf []binding
+
+	for actionName, key := range keyMap {
+		buf = append(buf, binding{actionName, key})
+	}
+
+	slices.SortFunc(buf, func(b1, b2 binding) int {
+		desc1 := b1.key.Help().Desc
+		desc2 := b2.key.Help().Desc
+
+		if desc1 < desc2 {
+			return -1
+		}
+
+		return 1
+	})
+
+	for _, b := range buf {
+		help := b.key.Help()
+		fmt.Fprintf(&view, "\n%s: %s", help.Desc, help.Key)
+	}
+
 	return borderStyle.Render(view.String())
 }
