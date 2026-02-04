@@ -391,7 +391,7 @@ func (m Model) View() string {
 				entry = fmt.Sprintf("      %s", d)
 			}
 
-		case i < viewMin || i > viewMax:
+		case i <= viewMin || i > viewMax:
 			// Enforce that only the current viewport height be
 			// displayed.
 			continue
