@@ -336,6 +336,11 @@ func (m Model) View() string {
 		fmt.Fprintf(&view, "%d: %s\n", i, s)
 	}
 
+	// Display an "↑" to show there are directories hidden from
+	// display above the currently viewable region of the UI. Note
+	// that we otherwise render an empty string with the same
+	// [lipgloss.Style], to conserve the spacing taken up by the
+	// arrow.
 	if viewMin > 0 {
 		view.WriteString(upArrow)
 	} else {
@@ -347,6 +352,8 @@ func (m Model) View() string {
 	view.WriteString("\n")
 
 	for i, d := range dirListing {
+		// Enforce that only the current viewport height be
+		// displayed.
 		if i < viewMin || i > viewMax {
 			continue
 		}
@@ -357,6 +364,8 @@ func (m Model) View() string {
 			mark = markChecked
 		}
 
+		// Inform the display which line is currently being
+		// pointed at by the cursor.
 		var entry string
 		if i == lineNumber {
 			entry = fmt.Sprintf("→ [%s] %s", mark, d)
@@ -364,6 +373,8 @@ func (m Model) View() string {
 			entry = fmt.Sprintf("  [%s] %s", mark, d)
 		}
 
+		// Here we're careful not to render the newline
+		// string, since this causes display problems.
 		view.WriteString(entryStyle.Render(entry) + "\n")
 	}
 
