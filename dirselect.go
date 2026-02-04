@@ -349,9 +349,9 @@ func (m Model) View() string {
 				Height(len(keyMap) + 2)
 		entryStyle = lipgloss.NewStyle().
 				MarginLeft(10)
-		arrowStyle = entryStyle.Width(30).Align(lipgloss.Center)
-		upArrow    = arrowStyle.Render("↑")
-		downArrow  = arrowStyle.Render("↓")
+		arrowStyle = entryStyle.Align(lipgloss.Center)
+		upArrow    = arrowStyle.Render("   ↑")
+		downArrow  = arrowStyle.Render("   ↓")
 	)
 
 	// Display the "jump list."
@@ -360,19 +360,10 @@ func (m Model) View() string {
 	}
 
 	// Display an "↑" to show there are directories hidden from
-	// display above the currently viewable region of the UI. Note
-	// that we otherwise render an empty string with the same
-	// [lipgloss.Style], to conserve the spacing taken up by the
-	// arrow.
+	// display above the currently viewable region of the UI.
 	if viewMin > 0 {
 		view.WriteString(upArrow)
-	} else {
-		view.WriteString(arrowStyle.Render(""))
 	}
-
-	// Add a newline before listing entries, so that introducing
-	// "↑" doesn't make the view look janky.
-	view.WriteString("\n")
 
 	for i, d := range dirListing {
 		// If d is one of the selected directories, then
@@ -411,14 +402,12 @@ func (m Model) View() string {
 
 		// Here we're careful not to render the newline
 		// string, since this causes display problems.
-		view.WriteString(entryStyle.Render(entry) + "\n")
+		view.WriteString("\n" + entryStyle.Render(entry))
 	}
 
 	// See remarks above pertaining to displaying "↑".
 	if viewMax < len(dirListing)-1 {
-		view.WriteString(downArrow)
-	} else {
-		view.WriteString(arrowStyle.Render(""))
+		view.WriteString("\n" + downArrow)
 	}
 
 	// Display the keybinding help text.
