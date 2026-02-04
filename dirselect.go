@@ -133,6 +133,18 @@ func (m *Model) scrollDown() {
 	}
 }
 
+func (m *Model) scrollUp() {
+	m.lineNumber--
+	if m.lineNumber < 0 {
+		m.lineNumber = 0
+	}
+
+	if m.viewMin > 0 && m.lineNumber < (m.viewMax+m.viewMin)/2 {
+		m.viewMin--
+		m.viewMax--
+	}
+}
+
 func (m Model) Init() tea.Cmd {
 	log.Printf("Starting by reading %s", m.currentDir)
 	return m.readDir(m.currentDir, "..")
@@ -241,15 +253,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.up):
-			m.lineNumber--
-			if m.lineNumber < 0 {
-				m.lineNumber = 0
-			}
-
-			if m.viewMin > 0 && m.lineNumber < (m.viewMax+m.viewMin)/2 {
-				m.viewMin--
-				m.viewMax--
-			}
+			m.scrollUp()
 
 		case key.Matches(msg, m.keyMap.quit):
 			logFile.Close()
