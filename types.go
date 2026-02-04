@@ -41,7 +41,7 @@ type Model struct {
 	keyMap keyMap
 
 	// FIXME: add explanation
-	viewMin, viewMax, viewHeight int
+	viewMin, viewMax int
 }
 
 // KeyMap defines key bindings for each user action.
