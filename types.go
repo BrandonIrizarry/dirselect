@@ -35,15 +35,15 @@ type readDirMsg struct {
 	//
 	// Inside /home/user/cherry:
 	//
-	// marmalade
 	// jam
+	// marmalade
 	// syrup
 	// etc.
 	//
 	// Back up to /home/user:
 	//
+	// cherry   <---- filepath.Base("/home/user/cherry")
 	// grape
 	// guava
-	// cherry   <---- filepath.Base("/home/user/cherry")
 	startDir string
 }
