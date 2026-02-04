@@ -76,7 +76,7 @@ var (
 const (
 	// maxViewHeight is the number of entries visible through the viewport
 	// at any given moment,
-	maxViewHeight = 10
+	maxViewHeight = 15
 
 	// maxSelections is the maximum size [Model.SelectedDirs], set
 	// as the number of bindings associated with the quick jumps
