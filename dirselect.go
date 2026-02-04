@@ -32,6 +32,27 @@ var (
 	// homeDir is the user's home directory, stored for
 	// allowing jumps back to it.
 	homeDir string
+
+	// KeyMap defines key bindings for each user action.
+	keyMap = struct {
+		down         key.Binding
+		up           key.Binding
+		back         key.Binding
+		explore      key.Binding
+		toggleSelect key.Binding
+		jump         key.Binding
+		jumpToHome   key.Binding
+		quit         key.Binding
+	}{
+		up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
+		down:         key.NewBinding(key.WithKeys("j", "down", "ctrl+n"), key.WithHelp("j/↓/ctrl+n", "next line")),
+		back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
+		explore:      key.NewBinding(key.WithKeys("l", "right", "enter"), key.WithHelp("l/→/enter", "explore this directory")),
+		jump:         key.NewBinding(key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), key.WithHelp("0-9", "jump to selection")),
+		jumpToHome:   key.NewBinding(key.WithKeys("~"), key.WithHelp("~", "jump back to home directory")),
+		toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
+		quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
+	}
 )
 
 func New() (Model, error) {
@@ -51,20 +72,9 @@ func New() (Model, error) {
 		return Model{}, fmt.Errorf("cannot create dirselect widget: %w", err)
 	}
 
-	digits := key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 	return Model{
-		id:         nextID(),
-		currentDir: homeDir,
-		keyMap: keyMap{
-			up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
-			down:         key.NewBinding(key.WithKeys("j", "down", "ctrl+n"), key.WithHelp("j/↓/ctrl+n", "next line")),
-			back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
-			explore:      key.NewBinding(key.WithKeys("l", "right", "enter"), key.WithHelp("l/→/enter", "explore this directory")),
-			jump:         key.NewBinding(digits, key.WithHelp("0-9", "jump to selection")),
-			jumpToHome:   key.NewBinding(key.WithKeys("~"), key.WithHelp("~", "jump back to home directory")),
-			toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
-			quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
-		},
+		id:           nextID(),
+		currentDir:   homeDir,
 		SelectedDirs: make([]string, 0),
 	}, nil
 }
@@ -193,17 +203,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, m.keyMap.back):
+		case key.Matches(msg, keyMap.back):
 			if m.currentDir == homeDir {
 				break
 			}
 
 			return m.back()
 
-		case key.Matches(msg, m.keyMap.down):
+		case key.Matches(msg, keyMap.down):
 			m.scrollDown(1)
 
-		case key.Matches(msg, m.keyMap.explore):
+		case key.Matches(msg, keyMap.explore):
 			if m.lineNumber == 0 && m.currentDir == homeDir {
 				break
 			}
@@ -214,7 +224,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return m.explore()
 
-		case key.Matches(msg, m.keyMap.jump):
+		case key.Matches(msg, keyMap.jump):
 			index, err := strconv.Atoi(msg.String())
 			if err != nil {
 				panic("FIXME: save error to m.err")
@@ -236,10 +246,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return m, m.readDir(path, startDir)
 
-		case key.Matches(msg, m.keyMap.jumpToHome):
+		case key.Matches(msg, keyMap.jumpToHome):
 			return m, m.readDir(homeDir, "..")
 
-		case key.Matches(msg, m.keyMap.toggleSelect):
+		case key.Matches(msg, keyMap.toggleSelect):
 			// Disable selection of the ".." entry. In
 			// addition, no "[ ]" should appear next to
 			// it.
@@ -260,10 +270,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.SelectedDirs = append(m.SelectedDirs, dir)
 			}
 
-		case key.Matches(msg, m.keyMap.up):
+		case key.Matches(msg, keyMap.up):
 			m.scrollUp(1)
 
-		case key.Matches(msg, m.keyMap.quit):
+		case key.Matches(msg, keyMap.quit):
 			logFile.Close()
 			quitting = true
 			return m, tea.Quit

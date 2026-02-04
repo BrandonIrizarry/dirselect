@@ -1,9 +1,5 @@
 package dirselect
 
-import (
-	"github.com/charmbracelet/bubbles/key"
-)
-
 type Model struct {
 	// The SelectedDirs field is the set of directories currently
 	// selected by the user for use as the model's result
@@ -35,25 +31,8 @@ type Model struct {
 	// [os.UserHomeDir].
 	currentDir string
 
-	// The keyMap field is the set of keybindings in for
-	// navigating the model UI (e.g., '↑' goes to the previous
-	// line, etc.)
-	keyMap keyMap
-
 	// FIXME: add explanation
 	viewMin, viewMax int
-}
-
-// KeyMap defines key bindings for each user action.
-type keyMap struct {
-	down         key.Binding
-	up           key.Binding
-	back         key.Binding
-	explore      key.Binding
-	toggleSelect key.Binding
-	jump         key.Binding
-	jumpToHome   key.Binding
-	quit         key.Binding
 }
 
 type readDirMsg struct {
