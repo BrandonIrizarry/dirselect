@@ -304,31 +304,29 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-var borderStyle = lipgloss.NewStyle().
-	BorderStyle(lipgloss.RoundedBorder()).
-	BorderForeground(lipgloss.Color("63")).
-	Width(50)
-
-var entryStyle = lipgloss.NewStyle().
-	MarginLeft(10)
-
-var arrowStyle = entryStyle.Width(30).Align(lipgloss.Center)
-
-var (
-	upArrow   = arrowStyle.Render("↑")
-	downArrow = arrowStyle.Render("↓")
-)
-
 func (m Model) View() string {
 	// Don't render anything in thise case; see [quitting].
 	if quitting {
 		return ""
 	}
 
-	var view strings.Builder
+	// Some local declarations to make things more readable
 	const (
 		markChecked = "✓"
 		markEmpty   = " "
+	)
+
+	var (
+		view        strings.Builder
+		borderStyle = lipgloss.NewStyle().
+				BorderStyle(lipgloss.RoundedBorder()).
+				BorderForeground(lipgloss.Color("63")).
+				Width(50)
+		entryStyle = lipgloss.NewStyle().
+				MarginLeft(10)
+		arrowStyle = entryStyle.Width(30).Align(lipgloss.Center)
+		upArrow    = arrowStyle.Render("↑")
+		downArrow  = arrowStyle.Render("↓")
 	)
 
 	// Display the "jump list."
