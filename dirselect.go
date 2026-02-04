@@ -172,7 +172,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.lineNumber = len(m.dirListing) - 1
 			}
 
-			if m.viewMax < len(m.dirListing)-1 && m.lineNumber > m.viewMax/2 {
+			if m.viewMax < len(m.dirListing)-1 && m.lineNumber > (m.viewMax+m.viewMin)/2 {
 				m.viewMin++
 				m.viewMax++
 			}
