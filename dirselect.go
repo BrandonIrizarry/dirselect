@@ -235,13 +235,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.back()
 
 		case key.Matches(msg, keyMap.beginning):
-			m.scrollUp(100)
+			m.scrollUp(len(dirListing) - 1)
 
 		case key.Matches(msg, keyMap.down):
 			m.scrollDown(1)
 
 		case key.Matches(msg, keyMap.end):
-			m.scrollDown(100)
+			m.scrollDown(len(dirListing) - 1)
 
 		case key.Matches(msg, keyMap.explore):
 			if lineNumber == 0 && currentDir == homeDir {
