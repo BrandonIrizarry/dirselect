@@ -356,9 +356,8 @@ func (m Model) View() string {
 		emphasized := lipgloss.NewStyle().Underline(true).Render(d)
 
 		switch {
-		// Enforce that only the current viewport height be
-		// displayed.
 		case i == 0:
+			// See the default case.
 			if lineNumber == 0 {
 				entry = fmt.Sprintf("→     %s", emphasized)
 			} else {
@@ -366,6 +365,8 @@ func (m Model) View() string {
 			}
 
 		case i < viewMin || i > viewMax:
+			// Enforce that only the current viewport height be
+			// displayed.
 			continue
 
 		default:
