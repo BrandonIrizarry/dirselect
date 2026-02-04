@@ -55,6 +55,8 @@ var (
 	// case of otherwise empty directories.
 	dirListing []string
 
+	showHidden bool
+
 	// KeyMap defines key bindings for each user action.
 	keyMap = struct {
 		down         key.Binding
@@ -66,6 +68,7 @@ var (
 		toggleSelect key.Binding
 		jump         key.Binding
 		jumpToHome   key.Binding
+		toggleHidden key.Binding
 		quit         key.Binding
 	}{
 		up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
@@ -77,6 +80,7 @@ var (
 		jump:         key.NewBinding(key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), key.WithHelp("0-9", "jump to selection")),
 		jumpToHome:   key.NewBinding(key.WithKeys("~"), key.WithHelp("~", "jump back to home directory")),
 		toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
+		toggleHidden: key.NewBinding(key.WithKeys("."), key.WithHelp(".", "hide/show hidden directories")),
 		quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 	}
 )
@@ -127,6 +131,15 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 
 		for _, d := range dirEntries {
 			if d.IsDir() {
+				reportsAsHidden, err := IsHidden(d.Name())
+				if err != nil {
+					panic(err)
+				}
+
+				if reportsAsHidden && !showHidden {
+					continue
+				}
+
 				dirs = append(dirs, d.Name())
 			}
 		}
@@ -279,6 +292,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keyMap.jumpToHome):
 			return m, m.readDir(homeDir, "..")
+
+		case key.Matches(msg, keyMap.toggleHidden):
+			showHidden = !showHidden
+			return m, m.readDir(currentDir, dirListing[lineNumber])
 
 		case key.Matches(msg, keyMap.toggleSelect):
 			// Disable selection of the ".." entry.

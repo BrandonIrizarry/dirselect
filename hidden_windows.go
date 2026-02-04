@@ -1,0 +1,18 @@
+//go:build windows
+
+package dirselect
+
+import "syscall"
+
+// IsHidden reports whether a file is hidden or not.
+func IsHidden(file string) (bool, error) {
+	pointer, err := syscall.UTF16PtrFromString(file)
+	if err != nil {
+		return false, err //nolint:wrapcheck
+	}
+	attributes, err := syscall.GetFileAttributes(pointer)
+	if err != nil {
+		return false, err //nolint:wrapcheck
+	}
+	return attributes&syscall.FILE_ATTRIBUTE_HIDDEN != 0, nil
+}
