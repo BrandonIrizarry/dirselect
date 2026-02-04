@@ -310,12 +310,7 @@ func (m Model) View() string {
 		return ""
 	}
 
-	// Some local declarations to make things more readable
-	const (
-		markChecked = "✓"
-		markEmpty   = " "
-	)
-
+	// Some local declarations to make things more readable.
 	var (
 		view        strings.Builder
 		borderStyle = lipgloss.NewStyle().
@@ -356,9 +351,11 @@ func (m Model) View() string {
 			continue
 		}
 
-		mark := markEmpty
+		// If d is one of the selected directories, then
+		// display a checkmark; else leave a space.
+		mark := " "
 		if slices.Contains(m.SelectedDirs, filepath.Join(currentDir, d)) {
-			mark = markChecked
+			mark = "✓"
 		}
 
 		// Inform the display which line is currently being
