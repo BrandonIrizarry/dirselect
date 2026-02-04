@@ -81,6 +81,10 @@ var (
 	}
 )
 
+// maxViewHeight is the number of entries visible through the viewport
+// at any given moment,
+const maxViewHeight = 10
+
 func New() (Model, error) {
 	// Set up logging first. We'll close the file just before
 	// returning the [tea.Quit] command. We can do this because we
@@ -204,7 +208,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		dirListing = msg.entries
 
 		viewMin = 0
-		viewMax = min(10, len(dirListing)) - 1
+		viewMax = min(maxViewHeight, len(dirListing)) - 1
 		lineNumber = 0
 
 		found := false
