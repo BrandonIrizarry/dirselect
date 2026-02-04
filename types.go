@@ -12,7 +12,6 @@ type Model struct {
 }
 
 type readDirMsg struct {
-	id       int
 	entries  []string
 	path     string
 	startDir string
