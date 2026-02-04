@@ -10,9 +10,6 @@ type Model struct {
 	// paths, so that they may be uniquely identified later on.
 	SelectedDirs []string
 
-	// The id field is the reference-count id of this model.
-	id int
-
 	// The currentDir field is the path of the currently explored
 	// directory. This should always be an absolute path. In
 	// practice, this should always be the case since the

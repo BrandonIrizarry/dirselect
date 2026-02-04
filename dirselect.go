@@ -88,7 +88,6 @@ func New() (Model, error) {
 	}
 
 	return Model{
-		id:           nextID(),
 		currentDir:   homeDir,
 		SelectedDirs: make([]string, 0),
 	}, nil
@@ -117,7 +116,7 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 			}
 		}
 
-		return readDirMsg{id: m.id, path: path, entries: dirs, startDir: startEntry}
+		return readDirMsg{path: path, entries: dirs, startDir: startEntry}
 	}
 }
 
@@ -184,10 +183,6 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case readDirMsg:
-		if msg.id != m.id {
-			break
-		}
-
 		// FIXME: this is very sensitive to state; I have to
 		// make sure dirListing is set before scrollDown is
 		// called, since it references this state being
