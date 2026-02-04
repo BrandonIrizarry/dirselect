@@ -58,33 +58,7 @@ var (
 	showHidden bool
 
 	// KeyMap defines key bindings for each user action.
-	keyMap = struct {
-		down         key.Binding
-		up           key.Binding
-		beginning    key.Binding
-		end          key.Binding
-		back         key.Binding
-		explore      key.Binding
-		toggleSelect key.Binding
-		jump         key.Binding
-		jumpToHome   key.Binding
-		toggleHidden key.Binding
-		quit         key.Binding
-	}{
-		up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
-		down:         key.NewBinding(key.WithKeys("j", "down", "ctrl+n"), key.WithHelp("j/↓/ctrl+n", "next line")),
-		beginning:    key.NewBinding(key.WithKeys("g", "alt+<"), key.WithHelp("g/M-<", "go to top of listing")),
-		end:          key.NewBinding(key.WithKeys("G", "alt+>"), key.WithHelp("G/M->", "go to bottom of listing")),
-		back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
-		explore:      key.NewBinding(key.WithKeys("l", "right", "enter", "ctrl+f"), key.WithHelp("l/→/enter", "explore this directory")),
-		jump:         key.NewBinding(key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), key.WithHelp("0-9", "jump to selection")),
-		jumpToHome:   key.NewBinding(key.WithKeys("~"), key.WithHelp("~", "jump back to home directory")),
-		toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
-		toggleHidden: key.NewBinding(key.WithKeys("."), key.WithHelp(".", "hide/show hidden directories")),
-		quit:         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
-	}
-
-	keyMap2 = map[string]key.Binding{
+	keyMap = map[string]key.Binding{
 		"up":           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
 		"down":         key.NewBinding(key.WithKeys("j", "down", "ctrl+n"), key.WithHelp("j/↓/ctrl+n", "next line")),
 		"beginning":    key.NewBinding(key.WithKeys("g", "alt+<"), key.WithHelp("g/M-<", "go to top of listing")),
@@ -263,23 +237,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, keyMap2["back"]):
+		case key.Matches(msg, keyMap["back"]):
 			if currentDir == homeDir {
 				break
 			}
 
 			return m.back()
 
-		case key.Matches(msg, keyMap2["beginning"]):
+		case key.Matches(msg, keyMap["beginning"]):
 			m.scrollUp(len(dirListing) - 1)
 
-		case key.Matches(msg, keyMap2["down"]):
+		case key.Matches(msg, keyMap["down"]):
 			m.scrollDown(1)
 
-		case key.Matches(msg, keyMap2["end"]):
+		case key.Matches(msg, keyMap["end"]):
 			m.scrollDown(len(dirListing) - 1)
 
-		case key.Matches(msg, keyMap2["explore"]):
+		case key.Matches(msg, keyMap["explore"]):
 			if lineNumber == 0 && currentDir == homeDir {
 				break
 			}
@@ -290,7 +264,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return m.explore()
 
-		case key.Matches(msg, keyMap2["jump"]):
+		case key.Matches(msg, keyMap["jump"]):
 			index, err := strconv.Atoi(msg.String())
 			if err != nil {
 				panic("FIXME: save error to m.err")
@@ -312,14 +286,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return m, m.readDir(path, startDir)
 
-		case key.Matches(msg, keyMap2["jumpToHome"]):
+		case key.Matches(msg, keyMap["jumpToHome"]):
 			return m, m.readDir(homeDir, "..")
 
-		case key.Matches(msg, keyMap2["toggleHidden"]):
+		case key.Matches(msg, keyMap["toggleHidden"]):
 			showHidden = !showHidden
 			return m, m.readDir(currentDir, dirListing[lineNumber])
 
-		case key.Matches(msg, keyMap2["toggleSelect"]):
+		case key.Matches(msg, keyMap["toggleSelect"]):
 			// Disable selection of the ".." entry.
 			if lineNumber == 0 {
 				break
@@ -345,10 +319,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.SelectedDirs = append(m.SelectedDirs, dir)
 			}
 
-		case key.Matches(msg, keyMap2["up"]):
+		case key.Matches(msg, keyMap["up"]):
 			m.scrollUp(1)
 
-		case key.Matches(msg, keyMap2["quit"]):
+		case key.Matches(msg, keyMap["quit"]):
 			logFile.Close()
 			quitting = true
 			return m, tea.Quit
