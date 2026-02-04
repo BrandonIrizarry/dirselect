@@ -321,7 +321,7 @@ func (m Model) View() string {
 		borderStyle = lipgloss.NewStyle().
 				BorderStyle(lipgloss.RoundedBorder()).
 				BorderForeground(lipgloss.Color("63")).
-				Width(50)
+				Padding(0, 5)
 		entryStyle = lipgloss.NewStyle().
 				MarginLeft(10)
 		arrowStyle = entryStyle.Width(30).Align(lipgloss.Center)
