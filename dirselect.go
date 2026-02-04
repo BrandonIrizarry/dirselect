@@ -352,18 +352,13 @@ func (m Model) View() string {
 				BorderStyle(lipgloss.RoundedBorder()).
 				BorderForeground(lipgloss.Color("63")).
 				Padding(0, 5).
-				Height(len(keyMap) + 2)
+				Height(len(keyMap) + 4)
 		entryStyle = lipgloss.NewStyle().
 				MarginLeft(10)
 		arrowStyle = entryStyle.Align(lipgloss.Center)
 		upArrow    = arrowStyle.Render("   ↑")
 		downArrow  = arrowStyle.Render("   ↓")
 	)
-
-	// Display the "jump list."
-	for i, s := range m.SelectedDirs {
-		fmt.Fprintf(&view, "%d: %s\n", i, s)
-	}
 
 	// Display an "↑" to show there are directories hidden from
 	// display above the currently viewable region of the UI.
@@ -414,6 +409,12 @@ func (m Model) View() string {
 	// See remarks above pertaining to displaying "↑".
 	if viewMax < len(dirListing)-1 {
 		view.WriteString("\n" + downArrow)
+	}
+
+	// Display the "jump list."
+	view.WriteString("\nJump list:")
+	for i, s := range m.SelectedDirs {
+		fmt.Fprintf(&view, "\n%d: %s", i, s)
 	}
 
 	// Display the keybinding help text.
