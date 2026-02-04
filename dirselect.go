@@ -135,15 +135,17 @@ func (m *Model) scrollDown(times int) {
 	}
 }
 
-func (m *Model) scrollUp() {
-	m.lineNumber--
-	if m.lineNumber < 0 {
-		m.lineNumber = 0
-	}
+func (m *Model) scrollUp(times int) {
+	for range times {
+		m.lineNumber--
+		if m.lineNumber < 0 {
+			m.lineNumber = 0
+		}
 
-	if m.viewMin > 0 && m.lineNumber < (m.viewMax+m.viewMin)/2 {
-		m.viewMin--
-		m.viewMax--
+		if m.viewMin > 0 && m.lineNumber < (m.viewMax+m.viewMin)/2 {
+			m.viewMin--
+			m.viewMax--
+		}
 	}
 }
 
@@ -255,7 +257,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keyMap.up):
-			m.scrollUp()
+			m.scrollUp(1)
 
 		case key.Matches(msg, m.keyMap.quit):
 			logFile.Close()
