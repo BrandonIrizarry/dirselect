@@ -411,12 +411,6 @@ func (m Model) View() string {
 		view.WriteString("\n" + downArrow)
 	}
 
-	// Display the "jump list."
-	view.WriteString("\nJump list:")
-	for i, s := range m.SelectedDirs {
-		fmt.Fprintf(&view, "\n%d: %s", i, s)
-	}
-
 	// Display the keybinding help text.
 	var viewHelp strings.Builder
 	type binding struct {
@@ -443,6 +437,15 @@ func (m Model) View() string {
 	for _, b := range buf {
 		help := b.key.Help()
 		fmt.Fprintf(&viewHelp, "\n%s: %s", help.Desc, help.Key)
+	}
+
+	// FIXME: borrow viewHelp for now for displaying the jump
+	// list.
+	//
+	// Display the "jump list."
+	viewHelp.WriteString("\n\nJump list:")
+	for i, s := range m.SelectedDirs {
+		fmt.Fprintf(&viewHelp, "\n%d: %s", i, s)
 	}
 
 	right := view.String()
