@@ -201,7 +201,7 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case readDirMsg:
-		// FIXME: this is very sensitive to state; I have to
+		// NOTE: this is very sensitive to state; I have to
 		// make sure dirListing is set before scrollDown is
 		// called, since it references this state being
 		// mutated here!
