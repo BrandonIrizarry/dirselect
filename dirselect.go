@@ -362,7 +362,8 @@ func (m Model) View() string {
 		// pointed at by the cursor.
 		var entry string
 		if i == lineNumber {
-			entry = fmt.Sprintf("→ [%s] %s", mark, d)
+			emphasized := lipgloss.NewStyle().Underline(true).Render(d)
+			entry = fmt.Sprintf("→ [%s] %s", mark, emphasized)
 		} else {
 			entry = fmt.Sprintf("  [%s] %s", mark, d)
 		}
