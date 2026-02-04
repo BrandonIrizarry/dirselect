@@ -278,6 +278,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			dir := m.dirAtPoint()
 
 			log.Printf("Candidate for toggling: %s", dir)
+
 			// Toggle the presence of the directory in the
 			// map.
 			if pos := slices.Index(m.SelectedDirs, dir); pos != -1 {
