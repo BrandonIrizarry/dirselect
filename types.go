@@ -30,9 +30,6 @@ type Model struct {
 	// top-level always initializes it with the result of
 	// [os.UserHomeDir].
 	currentDir string
-
-	// FIXME: add explanation
-	viewMin, viewMax int
 }
 
 type readDirMsg struct {

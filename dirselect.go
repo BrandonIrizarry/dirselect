@@ -33,6 +33,10 @@ var (
 	// allowing jumps back to it.
 	homeDir string
 
+	// viewMin and viewMax are the bounds of the current viewable
+	// portion of the directory picker [Model].
+	viewMin, viewMax int
+
 	// KeyMap defines key bindings for each user action.
 	keyMap = struct {
 		down         key.Binding
@@ -139,9 +143,9 @@ func (m *Model) scrollDown(times int) {
 			m.lineNumber = len(m.dirListing) - 1
 		}
 
-		if m.viewMax < len(m.dirListing)-1 && m.lineNumber > (m.viewMax+m.viewMin)/2 {
-			m.viewMin++
-			m.viewMax++
+		if viewMax < len(m.dirListing)-1 && m.lineNumber > (viewMax+viewMin)/2 {
+			viewMin++
+			viewMax++
 		}
 	}
 	log.Printf("line number after scroll-down code: %d", m.lineNumber)
@@ -154,9 +158,9 @@ func (m *Model) scrollUp(times int) {
 			m.lineNumber = 0
 		}
 
-		if m.viewMin > 0 && m.lineNumber < (m.viewMax+m.viewMin)/2 {
-			m.viewMin--
-			m.viewMax--
+		if viewMin > 0 && m.lineNumber < (viewMax+viewMin)/2 {
+			viewMin--
+			viewMax--
 		}
 	}
 }
@@ -179,8 +183,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// mutated here!
 		m.dirListing = msg.entries
 
-		m.viewMin = 0
-		m.viewMax = min(10, len(m.dirListing)) - 1
+		viewMin = 0
+		viewMax = min(10, len(m.dirListing)) - 1
 		m.lineNumber = 0
 
 		found := false
@@ -316,7 +320,7 @@ func (m Model) View() string {
 		fmt.Fprintf(&view, "%d: %s\n", i, s)
 	}
 
-	if m.viewMin > 0 {
+	if viewMin > 0 {
 		view.WriteString(upArrow)
 	} else {
 		view.WriteString(arrowStyle.Render(""))
@@ -327,7 +331,7 @@ func (m Model) View() string {
 	view.WriteString("\n")
 
 	for i, d := range m.dirListing {
-		if i < m.viewMin || i > m.viewMax {
+		if i < viewMin || i > viewMax {
 			continue
 		}
 
@@ -347,7 +351,7 @@ func (m Model) View() string {
 		view.WriteString(entryStyle.Render(entry) + "\n")
 	}
 
-	if m.viewMax < len(m.dirListing)-1 {
+	if viewMax < len(m.dirListing)-1 {
 		view.WriteString(downArrow)
 	} else {
 		view.WriteString(arrowStyle.Render(""))
