@@ -121,15 +121,17 @@ func (m Model) explore() (tea.Model, tea.Cmd) {
 	return m, m.readDir(path, startDir)
 }
 
-func (m *Model) scrollDown() {
-	m.lineNumber++
-	if m.lineNumber > len(m.dirListing)-1 {
-		m.lineNumber = len(m.dirListing) - 1
-	}
+func (m *Model) scrollDown(times int) {
+	for range times {
+		m.lineNumber++
+		if m.lineNumber > len(m.dirListing)-1 {
+			m.lineNumber = len(m.dirListing) - 1
+		}
 
-	if m.viewMax < len(m.dirListing)-1 && m.lineNumber > (m.viewMax+m.viewMin)/2 {
-		m.viewMin++
-		m.viewMax++
+		if m.viewMax < len(m.dirListing)-1 && m.lineNumber > (m.viewMax+m.viewMin)/2 {
+			m.viewMin++
+			m.viewMax++
+		}
 	}
 }
 
@@ -193,7 +195,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.back()
 
 		case key.Matches(msg, m.keyMap.down):
-			m.scrollDown()
+			m.scrollDown(1)
 
 		case key.Matches(msg, m.keyMap.explore):
 			if m.lineNumber == 0 && m.currentDir == homeDir {
