@@ -59,6 +59,8 @@ var (
 	keyMap = struct {
 		down         key.Binding
 		up           key.Binding
+		beginning    key.Binding
+		end          key.Binding
 		back         key.Binding
 		explore      key.Binding
 		toggleSelect key.Binding
@@ -68,6 +70,8 @@ var (
 	}{
 		up:           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
 		down:         key.NewBinding(key.WithKeys("j", "down", "ctrl+n"), key.WithHelp("j/↓/ctrl+n", "next line")),
+		beginning:    key.NewBinding(key.WithKeys("g", "alt+<"), key.WithHelp("g/M-<", "go to top of listing")),
+		end:          key.NewBinding(key.WithKeys("G", "alt+>"), key.WithHelp("G/M->", "go to bottom of listing")),
 		back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
 		explore:      key.NewBinding(key.WithKeys("l", "right", "enter"), key.WithHelp("l/→/enter", "explore this directory")),
 		jump:         key.NewBinding(key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), key.WithHelp("0-9", "jump to selection")),
@@ -230,8 +234,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return m.back()
 
+		case key.Matches(msg, keyMap.beginning):
+			m.scrollUp(100)
+
 		case key.Matches(msg, keyMap.down):
 			m.scrollDown(1)
+
+		case key.Matches(msg, keyMap.end):
+			m.scrollDown(100)
 
 		case key.Matches(msg, keyMap.explore):
 			if lineNumber == 0 && currentDir == homeDir {
