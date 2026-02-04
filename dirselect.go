@@ -114,9 +114,6 @@ func New() (Model, error) {
 // readDir returns a [tea.Cmd] that tells the UI to update with the
 // list of directories corresponding to a users selection ('explore',
 // 'back', etc.)
-//
-// Its sole purpose is to supply the path argument to the underlying
-// closure, which is then returned as the actual command.
 func (m Model) readDir(path, startEntry string) tea.Cmd {
 	// All directory listings start with an entry corresponding to
 	// the parent directory; see [Model.dirListing].
@@ -134,7 +131,7 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 			}
 		}
 
-		return readDirMsg{path: path, entries: dirs, startDir: startEntry}
+		return readDirMsg{currentDir: path, entries: dirs, startDir: startEntry}
 	}
 }
 
@@ -227,7 +224,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			log.Printf("line number: %d", lineNumber)
 		}
 
-		currentDir = msg.path
+		currentDir = msg.currentDir
 
 	case tea.KeyMsg:
 		switch {
