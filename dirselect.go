@@ -151,6 +151,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// FIXME: use const for magic number 10 here.
 		//
+		// FIXME: viewHeight can exist local to this case block!
+		//
 		// The viewport can't exceed 10 entries.
 		m.viewHeight = min(10, len(m.dirListing))
 
