@@ -76,7 +76,7 @@ var (
 		beginning:    key.NewBinding(key.WithKeys("g", "alt+<"), key.WithHelp("g/M-<", "go to top of listing")),
 		end:          key.NewBinding(key.WithKeys("G", "alt+>"), key.WithHelp("G/M->", "go to bottom of listing")),
 		back:         key.NewBinding(key.WithKeys("h", "left", "ctrl+b"), key.WithHelp("h/←/ctrl+b", "go to parent directory")),
-		explore:      key.NewBinding(key.WithKeys("l", "right", "enter"), key.WithHelp("l/→/enter", "explore this directory")),
+		explore:      key.NewBinding(key.WithKeys("l", "right", "enter", "ctrl+f"), key.WithHelp("l/→/enter", "explore this directory")),
 		jump:         key.NewBinding(key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), key.WithHelp("0-9", "jump to selection")),
 		jumpToHome:   key.NewBinding(key.WithKeys("~"), key.WithHelp("~", "jump back to home directory")),
 		toggleSelect: key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
