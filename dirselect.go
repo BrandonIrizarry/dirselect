@@ -122,6 +122,7 @@ func (m Model) explore() (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) scrollDown(times int) {
+	log.Printf("times: %d; line number before scroll-down code: %d", times, m.lineNumber)
 	for range times {
 		m.lineNumber++
 		if m.lineNumber > len(m.dirListing)-1 {
@@ -133,6 +134,7 @@ func (m *Model) scrollDown(times int) {
 			m.viewMax++
 		}
 	}
+	log.Printf("line number after scroll-down code: %d", m.lineNumber)
 }
 
 func (m *Model) scrollUp(times int) {
@@ -161,31 +163,33 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			break
 		}
 
+		// FIXME: this is very sensitive to state; I have to
+		// make sure dirListing is set before scrollDown is
+		// called, since it references this state being
+		// mutated here!
+		m.dirListing = msg.entries
+
+		m.viewMin = 0
+		m.viewMax = min(10, len(m.dirListing)) - 1
+		m.lineNumber = 0
+
 		found := false
 		for i, e := range msg.entries {
 			if e == msg.startDir {
-				m.lineNumber = i
+				log.Printf("found start dir %s at pos %d", e, i)
+				m.scrollDown(i)
 				found = true
 				break
 			}
 		}
 
 		if !found {
-			log.Printf("Couldn't find pointed-to entry: %s", msg.path)
+			log.Printf("Couldn't find pointed-to entry: %s", msg.startDir)
+		} else {
+			log.Printf("line number: %d", m.lineNumber)
 		}
 
-		m.dirListing = msg.entries
 		m.currentDir = msg.path
-
-		// FIXME: use const for magic number 10 here.
-		//
-		// FIXME: viewHeight can exist local to this case block!
-		//
-		// The viewport can't exceed 10 entries.
-		m.viewHeight = min(10, len(m.dirListing))
-
-		m.viewMin = m.lineNumber
-		m.viewMax = m.viewMin + m.viewHeight - 1
 
 	case tea.KeyMsg:
 		switch {
