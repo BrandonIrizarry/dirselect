@@ -357,7 +357,6 @@ func (m Model) View() string {
 		}
 
 		mark := markEmpty
-
 		if slices.Contains(m.SelectedDirs, filepath.Join(currentDir, d)) {
 			mark = markChecked
 		}
