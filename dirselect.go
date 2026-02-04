@@ -73,9 +73,16 @@ var (
 	}
 )
 
-// maxViewHeight is the number of entries visible through the viewport
-// at any given moment,
-const maxViewHeight = 10
+const (
+	// maxViewHeight is the number of entries visible through the viewport
+	// at any given moment,
+	maxViewHeight = 10
+
+	// maxSelections is the maximum size [Model.SelectedDirs], set
+	// as the number of bindings associated with the quick jumps
+	// to those directories.
+	maxSelections = 10
+)
 
 func New() (Model, error) {
 	// Set up logging first. We'll close the file just before
@@ -311,8 +318,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				log.Printf("Added %s to selected dirs", dir)
 
-				// If there are already 10 selected directories, do nothing.
-				if len(m.SelectedDirs) == 10 {
+				// If there are already [maxSelections] selected directories, do nothing.
+				if len(m.SelectedDirs) == maxSelections {
 					break
 				}
 
