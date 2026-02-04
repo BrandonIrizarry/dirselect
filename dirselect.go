@@ -421,6 +421,7 @@ func (m Model) View() string {
 	}
 
 	// Display the keybinding help text.
+	var viewHelp strings.Builder
 	type binding struct {
 		actionName string
 		key        key.Binding
@@ -444,8 +445,11 @@ func (m Model) View() string {
 
 	for _, b := range buf {
 		help := b.key.Help()
-		fmt.Fprintf(&view, "\n%s: %s", help.Desc, help.Key)
+		fmt.Fprintf(&viewHelp, "\n%s: %s", help.Desc, help.Key)
 	}
 
-	return borderStyle.Render(view.String())
+	right := view.String()
+	left := viewHelp.String()
+
+	return borderStyle.Render(lipgloss.JoinHorizontal(lipgloss.Left, left, right))
 }
