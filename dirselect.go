@@ -372,6 +372,7 @@ func (m Model) View() string {
 		view.WriteString(entryStyle.Render(entry) + "\n")
 	}
 
+	// See remarks above pertaining to displaying "↑".
 	if viewMax < len(dirListing)-1 {
 		view.WriteString(downArrow)
 	} else {
