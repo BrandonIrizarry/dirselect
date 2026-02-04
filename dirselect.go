@@ -33,6 +33,13 @@ var (
 	// allowing jumps back to it.
 	homeDir string
 
+	// currentDir is the path of the currently explored
+	// directory. This should always be an absolute path. In
+	// practice, this should always be the case since the
+	// top-level always initializes it with the result of
+	// [os.UserHomeDir].
+	currentDir string
+
 	// viewMin and viewMax are the bounds of the current viewable
 	// portion of the directory picker [Model].
 	viewMin, viewMax int
@@ -87,8 +94,11 @@ func New() (Model, error) {
 		return Model{}, fmt.Errorf("cannot create dirselect widget: %w", err)
 	}
 
+	// Unforunately we can't do this when first declaring
+	// currentDir, so we mustn't forget to do it here.
+	currentDir = homeDir
+
 	return Model{
-		currentDir:   homeDir,
 		SelectedDirs: make([]string, 0),
 	}, nil
 }
@@ -127,13 +137,13 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 // Note that we never edit the entries themselves, so it's OK for us
 // to only have a getter method for this field.
 func (m Model) dirAtPoint() string {
-	return filepath.Join(m.currentDir, dirListing[lineNumber])
+	return filepath.Join(currentDir, dirListing[lineNumber])
 }
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
-	path := filepath.Dir(m.currentDir)
-	startDir := filepath.Base(m.currentDir)
+	path := filepath.Dir(currentDir)
+	startDir := filepath.Base(currentDir)
 
 	return m, m.readDir(path, startDir)
 }
@@ -176,8 +186,8 @@ func (m *Model) scrollUp(times int) {
 }
 
 func (m Model) Init() tea.Cmd {
-	log.Printf("Starting by reading %s", m.currentDir)
-	return m.readDir(m.currentDir, "..")
+	log.Printf("Starting by reading %s", currentDir)
+	return m.readDir(currentDir, "..")
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -209,12 +219,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			log.Printf("line number: %d", lineNumber)
 		}
 
-		m.currentDir = msg.path
+		currentDir = msg.path
 
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keyMap.back):
-			if m.currentDir == homeDir {
+			if currentDir == homeDir {
 				break
 			}
 
@@ -224,7 +234,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.scrollDown(1)
 
 		case key.Matches(msg, keyMap.explore):
-			if lineNumber == 0 && m.currentDir == homeDir {
+			if lineNumber == 0 && currentDir == homeDir {
 				break
 			}
 
@@ -343,7 +353,7 @@ func (m Model) View() string {
 
 		mark := markEmpty
 
-		if slices.Contains(m.SelectedDirs, filepath.Join(m.currentDir, d)) {
+		if slices.Contains(m.SelectedDirs, filepath.Join(currentDir, d)) {
 			mark = markChecked
 		}
 

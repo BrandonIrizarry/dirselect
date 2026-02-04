@@ -9,13 +9,6 @@ type Model struct {
 	// The directories themselves are stored here as absolute
 	// paths, so that they may be uniquely identified later on.
 	SelectedDirs []string
-
-	// The currentDir field is the path of the currently explored
-	// directory. This should always be an absolute path. In
-	// practice, this should always be the case since the
-	// top-level always initializes it with the result of
-	// [os.UserHomeDir].
-	currentDir string
 }
 
 type readDirMsg struct {
