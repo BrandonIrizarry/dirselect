@@ -101,7 +101,6 @@ introducing a checkbox-selection mechanism:
      [ ] AwesomeProject/
 ```
 
-This also enables the selection of multiple directories, which are
-accessible as a slice of strings contained in the model returned by
-`Run()`. 
+This also enables the selection of multiple directories, which the
+model then provides to the client code.
 
