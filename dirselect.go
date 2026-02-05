@@ -439,7 +439,7 @@ func (m Model) View() string {
 		fmt.Fprintf(&viewHelp, "\n%s: %s", help.Desc, help.Key)
 	}
 
-	// FIXME: borrow viewHelp for now for displaying the jump
+	// NOTE: borrow viewHelp for now for displaying the jump
 	// list.
 	//
 	// Display the "jump list."
