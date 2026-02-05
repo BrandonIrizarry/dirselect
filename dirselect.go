@@ -445,7 +445,8 @@ func (m Model) View() string {
 	// Display the "jump list."
 	viewHelp.WriteString("\n\nJump list:")
 	for i, s := range m.SelectedDirs {
-		fmt.Fprintf(&viewHelp, "\n%d: %s", i, s)
+		baseName := filepath.Base(s)
+		fmt.Fprintf(&viewHelp, "\n%d: %s", i, baseName)
 	}
 
 	right := view.String()
