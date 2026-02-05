@@ -274,7 +274,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keyMap["jump"]):
 			index, err := strconv.Atoi(msg.String())
 			if err != nil {
-				panic("FIXME: save error to m.err")
+				panic("Fatal: can't convert jumplist index to int")
 			}
 
 			// 0-9 is the allowed range of jump indices;
