@@ -1,5 +1,6 @@
 # Introduction
 
+<pre> 
 ╭───────────────────────────────────────────────────────────────────────────────────╮
 │                                                                                   │
 │     explore this directory: l/→/enter                 ..                          │
@@ -21,6 +22,7 @@
 │     3: fynedesk                                                                   │
 │     4: Downloads                                                                  │
 ╰───────────────────────────────────────────────────────────────────────────────────╯
+</pre>
 
 This is a **directory**picker bubble, a bubble being a component for
 Bubble Tea applications. It was inspired by the [official filepicker
