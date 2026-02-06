@@ -2,7 +2,7 @@
 
 <img src="assets/demo.gif" alt="dirselect in action">
 
-This is a **directory**picker bubble, a bubble being a component for
+This is a **directory** picker bubble, a bubble being a component for
 Bubble Tea applications. It was inspired by the [official filepicker
 Bubble](https://github.com/charmbracelet/bubbles/tree/master/filepicker) — much of the code is taken directly from that example.
 
