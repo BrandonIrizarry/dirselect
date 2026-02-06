@@ -22,7 +22,7 @@ on an actual screenshot.
 # Example
 
 Here's some code that opens `dirselect`, then echoes the user's
-selections back to the console:
+selections back to the console.
 
 ```go
 package main
@@ -41,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p := tea.NewProgram(ds)
+	p := tea.NewProgram(ds, tea.WithAltScreen())
 	m, err := p.Run()
 	if err != nil {
 		log.Fatal(err)
@@ -49,9 +49,15 @@ func main() {
 
 	ds2 := m.(dirselect.Model)
 
-	fmt.Printf("You selected: %v\n", ds2.SelectedDirs)
+	fmt.Println("You selected:")
+	for _, dir := range ds2.SelectedDirs {
+		fmt.Println(dir)
+	}
 }
 ```
+
+This happens to be the program whose execution is captured in the
+introductory demo GIF.
 
 # Motivation
 
