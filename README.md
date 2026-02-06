@@ -9,11 +9,8 @@ Bubble](https://github.com/charmbracelet/bubbles/tree/master/filepicker) — muc
 I had started with the intention to pare down that filepicker to the
 simplicity of the [shopping list tutorial](https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#tutorial) found in the Bubble Tea
 README, but, as I learned more of the ropes, I began to realize why
-some of the design elements of the original filepicker were there.
-
-Note that, as a BubbleTea TUI application, the UI display is
-essentially text, and so it's easy to present it here without relying
-on an actual screenshot.
+some of the design elements of the original filepicker were there in
+the first place.
 
 # Installation
 
@@ -61,11 +58,11 @@ introductory demo GIF.
 
 # Motivation
 
-I needed something customizable and lightweight for my Gogent [REPL
-frontend](https://github.com/BrandonIrizarry/gogent_repl). It's indeed possible to use the official filepicker for
-selecting directories, but visually unintuitive since you must have
-already entered a directory to select it. So I had the idea of
-introducing a checkbox-selection mechanism:
+I needed something customizable and lightweight for my [Gogent](https://github.com/BrandonIrizarry/gogent)
+project's potential TUI-based frontend. It's indeed possible to use
+the official filepicker for selecting directories, but visually
+unintuitive since you must have already entered a directory to select
+it. So I had the idea of introducing a checkbox-selection mechanism:
 
 **OK**
 
@@ -85,6 +82,7 @@ introducing a checkbox-selection mechanism:
      [ ] AwesomeProject/
 ```
 
-This also enables the selection of multiple directories, which the
-model then provides to the client code.
+This opens up one's inspiration to then consider the selection of
+*multiple* directories, which the model then provides to the client
+code.
 
