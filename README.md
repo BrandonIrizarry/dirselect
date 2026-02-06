@@ -1,28 +1,6 @@
 # Introduction
 
-<pre> 
-╭───────────────────────────────────────────────────────────────────────────────────╮
-│                                                                                   │
-│     explore this directory: l/→/enter                 ..                          │
-│     go to bottom of listing: G/M->                [ ] Desktop                     │
-│     go to parent directory: h/←/ctrl+b            [ ] Documents                   │
-│     go to top of listing: g/M-<                 → [✓] Downloads                   │
-│     hide/show hidden directories: .               [ ] Music                       │
-│     jump back to home directory: ~                [ ] Pictures                    │
-│     jump to selection: 0-9                        [ ] Videos                      │
-│     next line: j/↓/ctrl+n                         [ ] bci@brandonirizarry.xyz     │
-│     previous line: k/↑/ctrl+p                     [✓] fynedesk                    │
-│     quit: q/ctrl+c                                [ ] go                          │
-│     toggle selection: spacebar                    [ ] mediatek                    │
-│                                                   [ ] repos                       │
-│     Jump list:                                                                    │
-│     0: gogent                                                                     │
-│     1: pratt_calc                                                                 │
-│     2: learn-pub-sub-starter                                                      │
-│     3: fynedesk                                                                   │
-│     4: Downloads                                                                  │
-╰───────────────────────────────────────────────────────────────────────────────────╯
-</pre>
+<img src="assets/demo.gif" alt="dirselect in action">
 
 This is a **directory**picker bubble, a bubble being a component for
 Bubble Tea applications. It was inspired by the [official filepicker
