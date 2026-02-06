@@ -67,6 +67,7 @@ var (
 		"explore":      key.NewBinding(key.WithKeys("l", "right", "enter", "ctrl+f"), key.WithHelp("l/→/enter", "explore this directory")),
 		"jump":         key.NewBinding(key.WithKeys("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), key.WithHelp("0-9", "jump to selection")),
 		"jumpToHome":   key.NewBinding(key.WithKeys("~"), key.WithHelp("~", "jump to home directory")),
+		"jumpToRoot":   key.NewBinding(key.WithKeys("/"), key.WithHelp("/", "jump to root directory")),
 		"toggleSelect": key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 		"toggleHidden": key.NewBinding(key.WithKeys("."), key.WithHelp(".", "hide/show hidden directories")),
 		"quit":         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
@@ -299,6 +300,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keyMap["jumpToHome"]):
 			return m, m.readDir(homeDir, "..")
+
+		case key.Matches(msg, keyMap["jumpToRoot"]):
+			return m, m.readDir("/", "..")
 
 		case key.Matches(msg, keyMap["toggleHidden"]):
 			showHidden = !showHidden
