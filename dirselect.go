@@ -155,6 +155,11 @@ func (m Model) dirAtPoint() string {
 
 // back adjusts all the state necessary to effect a "cd .." operation.
 func (m Model) back() (tea.Model, tea.Cmd) {
+	// Conveniently, both filepath.Dir("/") and filepath.Base("/")
+	// are "/", so when moving back when already at the top, we
+	// simply end up rereading the top, looking for "/". This ends
+	// up failing, but gracefully. See also [Model.Update], under
+	// the [readDirMsg] switch clause.
 	path := filepath.Dir(currentDir)
 	startDir := filepath.Base(currentDir)
 
@@ -206,6 +211,8 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case readDirMsg:
+		log.Printf("readDirMsg: %v", msg)
+
 		// NOTE: this is very sensitive to state; I have to
 		// make sure dirListing is set before scrollDown is
 		// called, since it references this state being
@@ -234,6 +241,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// exists. That's OK, since the default settings for
 		// viewMin, viewMax, and lineNumber (see above) take
 		// care of this: we simply start on "..".
+		//
+		// This also comes in handy when moving up when
+		// visiting the root directory, where readDirMsg is
+		// effectively ("/", "/"). Since "/" isn't an an entry
+		// of itself, the loop breaks and we start on ".."
+		// (see [Model.back]).
 		if !found {
 			log.Printf("Couldn't find pointed-to entry: %s", msg.startDir)
 		} else {
@@ -245,10 +258,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keyMap["back"]):
-			if currentDir == homeDir {
-				break
-			}
-
 			return m.back()
 
 		case key.Matches(msg, keyMap["beginning"]):
@@ -261,10 +270,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.scrollDown(len(dirListing) - 1)
 
 		case key.Matches(msg, keyMap["explore"]):
-			if lineNumber == 0 && currentDir == homeDir {
-				break
-			}
-
 			if lineNumber == 0 {
 				return m.back()
 			}
