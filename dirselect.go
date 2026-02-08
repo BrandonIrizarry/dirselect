@@ -131,16 +131,16 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 		}
 
 		for _, d := range dirEntries {
+			reportsAsHidden, err := IsHidden(d.Name())
+			if err != nil {
+				panic(err)
+			}
+
+			if reportsAsHidden && !showHidden {
+				continue
+			}
+
 			if d.IsDir() {
-				reportsAsHidden, err := IsHidden(d.Name())
-				if err != nil {
-					panic(err)
-				}
-
-				if reportsAsHidden && !showHidden {
-					continue
-				}
-
 				dirs = append(dirs, d.Name())
 			}
 		}
