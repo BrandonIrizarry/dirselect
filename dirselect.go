@@ -451,6 +451,7 @@ func (m Model) View() string {
 		var entry string
 		stylers := []styler{}
 
+		// If d isn't a directory, style it as a file.
 		if !strings.HasSuffix(d, "/") {
 			stylers = append(stylers, fileStyler)
 		}
