@@ -158,7 +158,7 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 			}
 
 			if d.IsDir() {
-				dirs = append(dirs, d.Name())
+				dirs = append(dirs, d.Name()+"/")
 			} else if showFiles {
 				// FIXME: the term "directory" is used
 				// ubiquitously in this project, but
