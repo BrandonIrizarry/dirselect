@@ -2,15 +2,19 @@
 
 <img src="assets/demo.gif" alt="dirselect in action">
 
-This is a **directory** picker bubble, a bubble being a component for
-Bubble Tea applications. It was inspired by the [official filepicker
-Bubble](https://github.com/charmbracelet/bubbles/tree/master/filepicker) — much of the code is taken directly from that example.
+This is a filepicker bubble, a bubble being a component for Bubble Tea
+applications. It was inspired by the [official filepicker Bubble](https://github.com/charmbracelet/bubbles/tree/master/filepicker) —
+much of the code is taken directly from that example.
 
 I had started with the intention to pare down that filepicker to the
 simplicity of the [shopping list tutorial](https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#tutorial) found in the Bubble Tea
 README, but, as I learned more of the ropes, I began to realize why
 some of the design elements of the original filepicker were there in
 the first place.
+
+This originally started out as a directory picker (hence the name
+"dirselect"), but I eventually decided to add the ability to select
+files as well.
 
 # Installation
 
@@ -85,4 +89,13 @@ it. So I had the idea of introducing a checkbox-selection mechanism:
 This opens up one's inspiration to then consider the selection of
 *multiple* directories, which the model then provides to the client
 code.
+
+Now the project has been extended to enable file selection as well,
+something I suspect could come in handy for fine-tuning exactly what a
+user chooses to present to an LLM as material to examine. That is, on
+the one hand, the normal case (as I was introduced to it) is to allow
+an LLM to view files inside some top-level project directory. However,
+it may be desirable to instead present it a single file, or else a
+project directory plus a few separate files for enriched
+context. We'll see how this idea goes.
 
