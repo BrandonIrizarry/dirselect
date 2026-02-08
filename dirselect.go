@@ -416,7 +416,7 @@ func (m Model) View() string {
 
 		var entry string
 
-		// EXPERIMENTAL
+		// STYLER COMPOSITION DEFINITIONS
 		type styler func(s lipgloss.Style) lipgloss.Style
 
 		emphasisStyler := func(s lipgloss.Style) lipgloss.Style {
@@ -436,7 +436,7 @@ func (m Model) View() string {
 
 			return acc.Render(s)
 		}
-		// END EXPERIMENTAL
+		// END STYLER COMPOSITION DEFINITIONS
 
 		stylers := []styler{}
 
