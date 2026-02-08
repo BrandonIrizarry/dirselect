@@ -415,7 +415,25 @@ func (m Model) View() string {
 		}
 
 		var entry string
-		emphasized := lipgloss.NewStyle().Underline(true).Render(d)
+
+		// EXPERIMENTAL
+		type styler func(s lipgloss.Style) lipgloss.Style
+
+		emphasisStyler := func(s lipgloss.Style) lipgloss.Style {
+			return s.Underline(true)
+		}
+
+		makeItSo := func(s string, stylers ...styler) string {
+			acc := lipgloss.NewStyle()
+
+			for _, sr := range stylers {
+				acc = sr(acc)
+			}
+
+			return acc.Render(s)
+		}
+		// END EXPERIMENTAL
+		emphasized := makeItSo(d, emphasisStyler)
 
 		switch {
 		case i == 0:
