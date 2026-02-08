@@ -384,10 +384,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // First, some preliminary defintions pertaining to the composition of
 // styles.
 //
-// Rendering on top of something already rendered doesn't work, and so
-// I came up with the idea of composing styles, much in the same way
-// you can compose functions. This way, you render some text only
-// once, using a preconstructed plurality of styles.
+// Rendering on top of something already rendered doesn't work (for
+// example, trying to underline text that's already been painted some
+// color.) So I came up with the idea of composing styles, much in the
+// same way you can compose functions. This way, you render some text
+// only once, using a preconstructed plurality of styles.
 type styler func(s lipgloss.Style) lipgloss.Style
 
 func emphasisStyler(s lipgloss.Style) lipgloss.Style {
