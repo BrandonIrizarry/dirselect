@@ -391,14 +391,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // only once, using a preconstructed plurality of styles.
 type styler func(s lipgloss.Style) lipgloss.Style
 
+// emphasisStyler is used to underline text when the cursor is
+// pointing to it.
 func emphasisStyler(s lipgloss.Style) lipgloss.Style {
 	return s.Underline(true)
 }
 
+// fileStyler is used to make file entries stand out more visibly.
 func fileStyler(s lipgloss.Style) lipgloss.Style {
 	return s.Foreground(lipgloss.Color("#ff0000"))
 }
 
+// render is used to render a string using a composition of styles.
 func render(s string, stylers ...styler) string {
 	acc := lipgloss.NewStyle()
 
