@@ -58,6 +58,9 @@ var (
 	// showHidden controls whether hidden items are visible.
 	showHidden bool
 
+	// showFiles controls whether files as well as directories
+	showFiles bool
+
 	// KeyMap defines key bindings for each user action.
 	keyMap = map[string]key.Binding{
 		"up":           key.NewBinding(key.WithKeys("k", "up", "ctrl+p"), key.WithHelp("k/↑/ctrl+p", "previous line")),
