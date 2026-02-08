@@ -126,7 +126,7 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 	//
 	// All directory listings start with an entry corresponding to
 	// the parent directory; see [Model.dirListing].
-	dirs := []string{".."}
+	dirs := []string{"../"}
 
 	return func() tea.Msg {
 		pathInfo, err := os.Stat(path)
@@ -440,7 +440,7 @@ func (m Model) View() string {
 
 		stylers := []styler{}
 
-		if !strings.HasSuffix(d, "/") && d != ".." {
+		if !strings.HasSuffix(d, "/") {
 			stylers = append(stylers, fileStyler)
 		}
 
