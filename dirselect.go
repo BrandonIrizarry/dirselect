@@ -129,6 +129,18 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 	dirs := []string{".."}
 
 	return func() tea.Msg {
+		pathInfo, err := os.Stat(path)
+		if err != nil {
+			log.Printf("ERROR: %T", err)
+			return err
+		}
+
+		// If we're trying to "read" a file, simply
+		// communicate to [Model.Update] to do nothing.
+		if !pathInfo.IsDir() {
+			return nil
+		}
+
 		dirEntries, err := os.ReadDir(path)
 		if err != nil {
 			log.Printf("ERROR: %T", err)
