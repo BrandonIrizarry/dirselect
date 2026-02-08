@@ -120,6 +120,10 @@ func New() (Model, error) {
 // list of directories corresponding to a users selection ('explore',
 // 'back', etc.)
 func (m Model) readDir(path, startEntry string) tea.Cmd {
+	// FIXME: since now we're also reading files, we need to
+	// figure out what to do when path refers to something that
+	// isn't a directory.
+	//
 	// All directory listings start with an entry corresponding to
 	// the parent directory; see [Model.dirListing].
 	dirs := []string{".."}
@@ -142,6 +146,11 @@ func (m Model) readDir(path, startEntry string) tea.Cmd {
 			}
 
 			if d.IsDir() {
+				dirs = append(dirs, d.Name())
+			} else if showFiles {
+				// FIXME: the term "directory" is used
+				// ubiquitously in this project, but
+				// we need to change this to "item."
 				dirs = append(dirs, d.Name())
 			}
 		}
@@ -309,6 +318,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keyMap["jumpToRoot"]):
 			return m, m.readDir("/", "..")
+
+		case key.Matches(msg, keyMap["toggleFiles"]):
+			showFiles = !showFiles
+			return m, m.readDir(currentDir, dirListing[lineNumber])
 
 		case key.Matches(msg, keyMap["toggleHidden"]):
 			showHidden = !showHidden

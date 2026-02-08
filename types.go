@@ -1,6 +1,9 @@
 package dirselect
 
 type Model struct {
+	// FIXME: since SelectedDirs can now include files, we might
+	// want to distinguish these somehow.
+	//
 	// SelectedDirs is the set of directories currently selected
 	// by the user for use as the model's result value. Directory
 	// selection is managed through the toggleSelect field of the
