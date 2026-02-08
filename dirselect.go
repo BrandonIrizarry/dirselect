@@ -398,7 +398,7 @@ func fileStyler(s lipgloss.Style) lipgloss.Style {
 	return s.Foreground(lipgloss.Color("#ff0000"))
 }
 
-func makeItSo(s string, stylers ...styler) string {
+func render(s string, stylers ...styler) string {
 	acc := lipgloss.NewStyle()
 
 	for _, sr := range stylers {
@@ -455,9 +455,9 @@ func (m Model) View() string {
 			// See the default case.
 			if lineNumber == 0 {
 				stylers = append(stylers, emphasisStyler)
-				entry = fmt.Sprintf("→     %s", makeItSo(d, stylers...))
+				entry = fmt.Sprintf("→     %s", render(d, stylers...))
 			} else {
-				entry = fmt.Sprintf("      %s", makeItSo(d, stylers...))
+				entry = fmt.Sprintf("      %s", render(d, stylers...))
 			}
 
 		case i <= viewMin || i > viewMax:
@@ -470,9 +470,9 @@ func (m Model) View() string {
 			// pointed at by the cursor.
 			if i == lineNumber {
 				stylers = append(stylers, emphasisStyler)
-				entry = fmt.Sprintf("→ [%s] %s", mark, makeItSo(d, stylers...))
+				entry = fmt.Sprintf("→ [%s] %s", mark, render(d, stylers...))
 			} else {
-				entry = fmt.Sprintf("  [%s] %s", mark, makeItSo(d, stylers...))
+				entry = fmt.Sprintf("  [%s] %s", mark, render(d, stylers...))
 			}
 		}
 
