@@ -423,6 +423,10 @@ func (m Model) View() string {
 			return s.Underline(true)
 		}
 
+		fileStyler := func(s lipgloss.Style) lipgloss.Style {
+			return s.Foreground(lipgloss.Color("#ff0000"))
+		}
+
 		makeItSo := func(s string, stylers ...styler) string {
 			acc := lipgloss.NewStyle()
 
@@ -433,15 +437,21 @@ func (m Model) View() string {
 			return acc.Render(s)
 		}
 		// END EXPERIMENTAL
-		emphasized := makeItSo(d, emphasisStyler)
+
+		stylers := []styler{}
+
+		if !strings.HasSuffix(d, "/") && d != ".." {
+			stylers = append(stylers, fileStyler)
+		}
 
 		switch {
 		case i == 0:
 			// See the default case.
 			if lineNumber == 0 {
-				entry = fmt.Sprintf("→     %s", emphasized)
+				stylers = append(stylers, emphasisStyler)
+				entry = fmt.Sprintf("→     %s", makeItSo(d, stylers...))
 			} else {
-				entry = fmt.Sprintf("      %s", d)
+				entry = fmt.Sprintf("      %s", makeItSo(d, stylers...))
 			}
 
 		case i <= viewMin || i > viewMax:
@@ -453,9 +463,10 @@ func (m Model) View() string {
 			// Inform the display which line is currently being
 			// pointed at by the cursor.
 			if i == lineNumber {
-				entry = fmt.Sprintf("→ [%s] %s", mark, emphasized)
+				stylers = append(stylers, emphasisStyler)
+				entry = fmt.Sprintf("→ [%s] %s", mark, makeItSo(d, stylers...))
 			} else {
-				entry = fmt.Sprintf("  [%s] %s", mark, d)
+				entry = fmt.Sprintf("  [%s] %s", mark, makeItSo(d, stylers...))
 			}
 		}
 
