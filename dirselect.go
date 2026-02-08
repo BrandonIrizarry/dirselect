@@ -74,6 +74,7 @@ var (
 		"jumpToRoot":   key.NewBinding(key.WithKeys("/"), key.WithHelp("/", "jump to root directory")),
 		"toggleSelect": key.NewBinding(key.WithKeys(" "), key.WithHelp("spacebar", "toggle selection")),
 		"toggleHidden": key.NewBinding(key.WithKeys("."), key.WithHelp(".", "hide/show hidden directories")),
+		"toggleFiles":  key.NewBinding(key.WithKeys("f"), key.WithHelp("f", "toggle showing files as well")),
 		"quit":         key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q/ctrl+c", "quit")),
 	}
 )
