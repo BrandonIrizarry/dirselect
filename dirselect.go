@@ -379,6 +379,35 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+// The remaining portion of this file pertains to defining the view.
+//
+// First, some preliminary defintions pertaining to the composition of
+// styles.
+//
+// Rendering on top of something already rendered doesn't work, and so
+// I came up with the idea of composing styles, much in the same way
+// you can compose functions. This way, you render some text only
+// once, using a preconstructed plurality of styles.
+type styler func(s lipgloss.Style) lipgloss.Style
+
+func emphasisStyler(s lipgloss.Style) lipgloss.Style {
+	return s.Underline(true)
+}
+
+func fileStyler(s lipgloss.Style) lipgloss.Style {
+	return s.Foreground(lipgloss.Color("#ff0000"))
+}
+
+func makeItSo(s string, stylers ...styler) string {
+	acc := lipgloss.NewStyle()
+
+	for _, sr := range stylers {
+		acc = sr(acc)
+	}
+
+	return acc.Render(s)
+}
+
 func (m Model) View() string {
 	// Don't render anything in thise case; see [quitting].
 	if quitting {
@@ -415,29 +444,6 @@ func (m Model) View() string {
 		}
 
 		var entry string
-
-		// STYLER COMPOSITION DEFINITIONS
-		type styler func(s lipgloss.Style) lipgloss.Style
-
-		emphasisStyler := func(s lipgloss.Style) lipgloss.Style {
-			return s.Underline(true)
-		}
-
-		fileStyler := func(s lipgloss.Style) lipgloss.Style {
-			return s.Foreground(lipgloss.Color("#ff0000"))
-		}
-
-		makeItSo := func(s string, stylers ...styler) string {
-			acc := lipgloss.NewStyle()
-
-			for _, sr := range stylers {
-				acc = sr(acc)
-			}
-
-			return acc.Render(s)
-		}
-		// END STYLER COMPOSITION DEFINITIONS
-
 		stylers := []styler{}
 
 		if !strings.HasSuffix(d, "/") {
