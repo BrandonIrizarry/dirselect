@@ -55,6 +55,7 @@ var (
 	// case of otherwise empty directories.
 	dirListing []string
 
+	// showHidden controls whether hidden items are visible.
 	showHidden bool
 
 	// KeyMap defines key bindings for each user action.
